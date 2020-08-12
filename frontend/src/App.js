@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+
 import queryString from "query-string";
 import styled from "styled-components";
 
+import AlbumsList from "./components/AlbumsList";
+
 function App() {
-  const [data, setData] = useState(null);
+  const [spotifyData, setData] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
@@ -14,31 +17,42 @@ function App() {
   }, [window.location]);
 
   useEffect(() => {
-    accessToken &&
-      fetch("https://api.spotify.com/v1/me", {
-        headers: { Authorization: "Bearer " + accessToken },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setData(data);
+    if (accessToken) {
+      Promise.all([
+        fetch("https://api.spotify.com/v1/me/albums?limit=50", {
+          headers: { Authorization: "Bearer " + accessToken },
+        }),
+      ])
+        .then(function (responses) {
+          // Get a JSON object from each of the responses
+          return Promise.all(
+            responses.map(function (response) {
+              return response.json();
+            })
+          );
+        })
+        .then(function (data) {
+          // Log the data to the console
+          // You would do something with both sets of data here
+          setData({ albums: data[0].items });
+        })
+        .catch(function (error) {
+          // if there's an error, log it
+          console.log(error);
         });
+    }
   }, [accessToken]);
 
   function handleSignInClick() {
-    window.location = "https://spotify-labels-backend.herokuapp.com/login";
+    window.location = "http://localhost:8888/login";
   }
+  console.log(spotifyData);
   return (
     <Container className="App">
       {!accessToken && (
         <Button onClick={handleSignInClick}>Sign in with Spotify</Button>
       )}
-      {accessToken && (
-        <h2>
-          Hi {data && data.display_name}, you have{" "}
-          {data && data.followers.total} followers on Spotify
-        </h2>
-      )}
+      {spotifyData && <AlbumsList albums={spotifyData.albums} />}
     </Container>
   );
 }
@@ -57,13 +71,13 @@ const Button = styled.div`
   font-weight: 700;
   letter-spacing: 2px;
   line-height: 12px;
-  padding-bottom: 9px;
-  padding-left: 32px;
-  padding-right: 32px;
-  padding-top: 11px;
+  padding: 11px 32px;
   border-radius: 20px;
   cursor: pointer;
   margin: 2rem 0;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 export default App;
