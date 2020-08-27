@@ -5,12 +5,14 @@ import * as serviceWorker from "./serviceWorker";
 import { createStore } from "redux";
 import { currentTrackReducer } from "./reducers/spotifyDataReducer";
 import { Provider } from "react-redux";
+import { GlobalStyle } from "./globalStyles";
 
 const store = createStore(currentTrackReducer);
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
+      <GlobalStyle />
       <App />
     </Provider>
   </React.StrictMode>,
