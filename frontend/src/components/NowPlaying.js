@@ -91,7 +91,6 @@ export default function NowPlaying(props) {
           <>
             <h2>About {props.currentTrack.artists[0].name}</h2>
             <ReactMarkdown source={props.songData.discogsArtistData.profile} />
-            <p>{props.songData.discogsArtistData.profile}</p>
           </>
         )}
         {trackCredits && (

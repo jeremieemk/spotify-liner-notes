@@ -60,7 +60,7 @@ function App() {
   return (
     <div className="App">
       {!accessToken && <LandingPage handleSignInClick={handleSignInClick} />}
-      {songData ? (
+      {songData && (
         <div>
           <NowPlaying
             currentTrack={currentTrack}
@@ -69,9 +69,8 @@ function App() {
             songData={songData}
           />
         </div>
-      ) : (
-        <div>Loading</div>
       )}
+      {accessToken && !songData && <div>Loading</div>}
     </div>
   );
 }

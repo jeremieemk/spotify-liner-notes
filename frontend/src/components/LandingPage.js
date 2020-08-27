@@ -18,10 +18,10 @@ export default function LandingPage(props) {
           <ArrowRightIcon /> How does it work?
         </span>
         <br />
-        1. Play some music from your Spotify player (you need a Spotify premium
-        account to use this app)
+        1. Play some music from your Spotify player (you'll need a Spotify
+        premium account to use this app)
         <br />
-        2. Log in to your Spotify account via the button below
+        2. Log in to your Spotify account via the button below:
       </h2>
 
       <Button onClick={props.handleSignInClick}>Log in to Spotify!</Button>
