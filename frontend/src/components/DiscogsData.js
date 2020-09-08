@@ -41,6 +41,7 @@ export default function DiscogsData(props) {
       const bio = songData.discogsArtistData.profile
         .replaceAll("[l=", "")
         .replaceAll("]", "")
+        .replaceAll("[m=", "")
         .replaceAll("[a=", "");
       return (
         <>
