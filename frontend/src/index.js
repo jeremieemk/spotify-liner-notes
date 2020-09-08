@@ -2,19 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { createStore } from "redux";
-import { currentTrackReducer } from "./reducers/spotifyDataReducer";
-import { Provider } from "react-redux";
 import { GlobalStyle } from "./globalStyles";
 
-const store = createStore(currentTrackReducer);
+require("dotenv").config();
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <GlobalStyle />
-      <App />
-    </Provider>
+    <GlobalStyle />
+    <App />
   </React.StrictMode>,
   document.getElementById("root")
 );

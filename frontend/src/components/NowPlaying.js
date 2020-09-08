@@ -1,49 +1,59 @@
 import React from "react";
 import styled from "styled-components";
-import { Button } from "../globalStyles.js";
-import { ArrowRightIcon } from "react-line-awesome";
-import ReactMarkdown from "react-markdown";
+import { Heading } from "../globalStyles.js";
+import { ArrowRightIcon, BroadcastTowerIcon } from "react-line-awesome";
+import DiscogsData from "./DiscogsData";
 
 export default function NowPlaying(props) {
   console.log("props", props);
+
+  const { currentTrack, songData, releaseIndex, skipReleaseIndex } = props;
+  const albumCover =
+    songData.discogsAlbumData && songData.discogsAlbumData.images
+      ? songData.discogsAlbumData.images[0].uri
+      : currentTrack.album.images[0].url;
+
   function addComa(i) {
     return (
-      props.currentTrack.artists.length > 1 &&
-      i < props.currentTrack.artists.length - 1
+      currentTrack.artists.length > 1 && i < currentTrack.artists.length - 1
     );
   }
+  function renderArtists() {
+    return currentTrack.artists.map((artist, i) => (
+      <span>
+        {artist.name}
+        {addComa(i) && `, `}
+      </span>
+    ));
+  }
 
-  const releaseDate =
-    props.songData.discogsAlbumData && props.songData.discogsAlbumData.year
-      ? props.songData.discogsAlbumData.year
-      : props.currentTrack.album.release_date.substring(0, 4);
+  function renderReleaseDetails() {
+    const album =
+      songData.discogsAlbumData && songData.discogsAlbumData.title
+        ? songData.discogsAlbumData.title
+        : songData.spotifyAlbumData.name;
+    const albumType = songData.discogsAlbumData
+      ? ""
+      : "the " + songData.spotifyAlbumData.album_type;
+    const releaseDate =
+      songData.discogsAlbumData && songData.discogsAlbumData.year
+        ? songData.discogsAlbumData.year
+        : currentTrack.album.release_date.substring(0, 4);
 
-  const label =
-    props.songData.discogsAlbumData && props.songData.discogsAlbumData.labels
-      ? props.songData.discogsAlbumData.labels[0].name
-      : props.songData.spotifyAlbumData.label;
-
-  const album =
-    props.songData.discogsAlbumData && props.songData.discogsAlbumData.title
-      ? props.songData.discogsAlbumData.title
-      : props.songData.spotifyAlbumData.name;
-
-  const albumCover =
-    props.songData.discogsAlbumData && props.songData.discogsAlbumData.images
-      ? props.songData.discogsAlbumData.images[0].uri
-      : props.currentTrack.album.images[0].url;
-
-  const albumType = props.songData.discogsAlbumData
-    ? ""
-    : "the " + props.songData.spotifyAlbumData.album_type;
-
-  const tracklistItem =
-    props.songData.discogsAlbumData &&
-    props.songData.discogsAlbumData.tracklist.find(
-      (track) => track.title === props.currentTrack.name
+    const label =
+      songData.discogsAlbumData && songData.discogsAlbumData.labels
+        ? songData.discogsAlbumData.labels[0].name
+        : songData.spotifyAlbumData.label;
+    return (
+      <div>
+        <ArrowRightIcon />
+        from {albumType} "{album}" {" - "}
+        {label} {"("}
+        {releaseDate}
+        {")"}
+      </div>
     );
-
-  const trackCredits = tracklistItem && tracklistItem.extraartists;
+  }
 
   return (
     <Container>
@@ -51,103 +61,22 @@ export default function NowPlaying(props) {
         <img src={albumCover} alt="" />
       </div>
       <div className="infos-container">
-        <h1>
-          {props.currentTrack.artists.map((artist, i) => (
-            <span>
-              {artist.name}
-              {addComa(i) && `, `}
-            </span>
-          ))}
-        </h1>
-        <h2 className="song-title">"{props.currentTrack.name}"</h2>
-        <h2 className="record-label">
-          <ArrowRightIcon /> from {albumType} "{album}" {" - "}
-          {label} {"("}
-          {releaseDate}
-          {")"}
-        </h2>
-        {props.songData.discogsAlbumData && (
-          <h4 className="formats">
-            {props.songData.discogsAlbumData.formats.map((format, i) => (
-              <span>
-                {format.name}
-                {i > props.songData.discogsAlbumData.formats - 1 && ", "}
-              </span>
-            ))}
+        <Heading>{renderArtists()}</Heading>
+        <h2 className="song-title">"{currentTrack.name}"</h2>
+        <h2 className="record-label">{renderReleaseDetails()}</h2>
+        {songData.discogsAlbumData ? (
+          <DiscogsData
+            currentTrack={currentTrack}
+            skipReleaseIndex={skipReleaseIndex}
+            releaseIndex={releaseIndex}
+            songData={songData}
+          />
+        ) : (
+          <h4>
+            <BroadcastTowerIcon /> Sorry! we couldn't find more information on
+            this track...
           </h4>
         )}
-        {props.songData.releasesCount > 1 && (
-          <Button className="more-releases" onClick={props.skipReleaseIndex}>
-            {" "}
-            More Releases
-            <span>
-              ({props.releaseIndex + 1}
-              {"/"}
-              {props.songData.releasesCount})
-            </span>
-          </Button>
-        )}
-        {props.songData.discogsArtistData && (
-          <>
-            <h2>About {props.currentTrack.artists[0].name}</h2>
-            <ReactMarkdown source={props.songData.discogsArtistData.profile} />
-          </>
-        )}
-        {trackCredits && (
-          <>
-            <h2>Track Credits</h2>
-            <ul>
-              {trackCredits.map((artist) => {
-                return (
-                  <div>
-                    <strong>
-                      {artist.role}
-                      {": "}
-                    </strong>
-                    <span>{artist.name}</span>
-                  </div>
-                );
-              })}
-            </ul>
-          </>
-        )}
-        {props.songData.discogsAlbumData && (
-          <>
-            <h2>Record Tracklist</h2>
-            <ul>
-              {props.songData.discogsAlbumData.tracklist.map((track) => {
-                return (
-                  <div>
-                    <strong>
-                      {track.position}
-                      {" - "}
-                    </strong>
-                    <span>{track.title}</span>
-                  </div>
-                );
-              })}
-            </ul>
-          </>
-        )}
-        {props.songData.discogsAlbumData &&
-          props.songData.discogsAlbumData.extraartists.length && (
-            <>
-              <h2>Record Credits</h2>
-              <ul>
-                {props.songData.discogsAlbumData.extraartists.map((artist) => {
-                  return (
-                    <div>
-                      <strong>
-                        {artist.role}
-                        {": "}
-                      </strong>
-                      <span>{artist.name}</span>
-                    </div>
-                  );
-                })}
-              </ul>
-            </>
-          )}
       </div>
     </Container>
   );
@@ -156,24 +85,19 @@ export default function NowPlaying(props) {
 const Container = styled.div`
   display: flex;
   height: 100%;
-
+  @media (max-width: 801px) {
+    flex-direction: column;
+  }
   .image-container,
   .infos-container {
     padding: 2rem;
-  }
-  h1 {
-    background-color: rgb(250, 199, 255);
-    padding: 5px 10px;
-    width: fit-content;
-    font-family: medium;
-    font-size: 2.3rem;
-    letter-spacing: 4px;
+    width: 50%;
+    @media (max-width: 801px) {
+      width: 100%;
+    }
   }
   .song-title {
     font-size: 2rem;
-  }
-  div {
-    width: 50%;
   }
   img {
     width: 100%;

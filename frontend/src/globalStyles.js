@@ -50,3 +50,12 @@ export const Button = styled.div`
   font-family: medium;
   border: 2px solid black;
 `;
+
+export const Heading = styled.h1`
+  background-color: rgb(250, 199, 255);
+  padding: 5px 10px;
+  width: fit-content;
+  font-family: medium;
+  font-size: 2.3rem;
+  letter-spacing: 4px;
+`;

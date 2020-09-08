@@ -1,15 +1,25 @@
 import Discojs from "discojs";
 
-export function fetchCurrentTrack(accessToken, setCurrentTrack) {
+export function fetchCurrentTrack(
+  accessToken,
+  setCurrentTrack,
+  setErrorMessage
+) {
   const nowPlayingApiUrl = "https://api.spotify.com/v1/me/player";
   fetch(nowPlayingApiUrl, {
     headers: { Authorization: "Bearer " + accessToken },
   })
     .then((response) => {
-      console.log(response);
-      return response.json();
+      console.log(response.status);
+      if (response.status === 204 || response.status === 401) {
+        setErrorMessage(response.status);
+      } else {
+        setErrorMessage(null);
+        return response.json();
+      }
     })
     .then((data) => {
+      console.log(data);
       setCurrentTrack(data.item);
     })
     .catch(function (error) {
@@ -25,9 +35,9 @@ export function fetchSongInfo(
   releaseIndex
 ) {
   const dicogsApi = new Discojs({
-    userToken: "qICsaNYfZQFfkMlwfWDNOlCpmBXgdcWBgvsKjJhV",
+    userToken: process.env.REACT_APP_DISCOGS_KEY,
   });
-  console.log("gros fetch");
+  console.log("gros fetch", process.env.DISCOGS_KEY);
   let spotifyAlbumData = null;
   let discogsAlbumData = null;
   let discogsArtistData = null;
@@ -46,16 +56,18 @@ export function fetchSongInfo(
       spotifyAlbumData = data;
     })
     .then(() => {
+      // removes parenthesis and what's inside
       const regex = /\s*\([^)]*\)/g;
+
       dicogsApi
         .searchDatabase({
           // search uses only the first word of the artist name
           // artist: spotifyTrackData.artists[0].name.replace(/ .*/, ""),
           artist: currentTrack.artists[0].name,
-          track: currentTrack.name,
-          // removes parenthesis and what's inside
-          // .replace(regex, "")
-          // .substring(0, currentTrack.name.indexOf("-")),
+          track: currentTrack.name
+            .replace(regex, "")
+            .replaceAll("&", "")
+            .substring(0, currentTrack.name.indexOf("-")),
           type: "release",
         })
         .then((data) => {
@@ -65,7 +77,6 @@ export function fetchSongInfo(
             const filteredList = data.results.filter((release) =>
               release.hasOwnProperty("year")
             );
-            console.log("filteredList", filteredList);
             releasesCount = filteredList.length;
             if (filteredList.length === 0) {
               discogsAlbumId = data.results[0].id;

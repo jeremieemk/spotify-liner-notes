@@ -6,12 +6,15 @@ import { fetchCurrentTrack, fetchSongInfo } from "./utilities/fetchData";
 
 import NowPlaying from "./components/NowPlaying";
 import LandingPage from "./components/LandingPage";
+import Loader from "./components/Loader";
+import Error from "./components/Error";
 
 function App() {
   const [accessToken, setAccessToken] = useState(null);
   const [songData, setSongData] = useState(null);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [releaseIndex, setReleaseIndex] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const currentTrackName = currentTrack && currentTrack.name;
   // extracts token from url
@@ -23,9 +26,9 @@ function App() {
   // fetches current track info every 5 seconds
   useEffect(() => {
     if (accessToken) {
-      fetchCurrentTrack(accessToken, setCurrentTrack);
+      fetchCurrentTrack(accessToken, setCurrentTrack, setErrorMessage);
       setInterval(() => {
-        fetchCurrentTrack(accessToken, setCurrentTrack);
+        fetchCurrentTrack(accessToken, setCurrentTrack, setErrorMessage);
       }, 5000);
     }
   }, [accessToken]);
@@ -55,7 +58,10 @@ function App() {
   }
 
   function handleSignInClick() {
-    window.location = "http://localhost:8888/login";
+    window.location =
+      process.env.NODE_ENV === "production"
+        ? "https://spotify-labels-backend.herokuapp.com/login"
+        : "http://localhost:8888/login";
   }
   return (
     <div className="App">
@@ -70,7 +76,12 @@ function App() {
           />
         </div>
       )}
-      {accessToken && !songData && <div>Loading</div>}
+      {accessToken && !songData && !errorMessage && (
+        <div>
+          <Loader />
+        </div>
+      )}
+      {accessToken && errorMessage && <Error errorMessage={errorMessage} />}
     </div>
   );
 }
