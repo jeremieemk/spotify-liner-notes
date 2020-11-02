@@ -3,17 +3,25 @@ import styled from "styled-components";
 import { Button } from "../globalStyles.js";
 
 export default function DiscogsData(props) {
-  const { currentTrack, songData, releaseIndex, skipReleaseIndex } = props;
+  const { currentTrack, songData, releaseIndex, skipReleaseIndex, discogsReleaseData } = props;
+  console.log(songData.discogsReleaseData)
   function renderFormats() {
     return (
-      <h4 className="formats">
-        {songData.discogsAlbumData.formats.map((format, i) => (
-          <span>
-            {format.name}
-            {i > songData.discogsAlbumData.formats - 1 && ", "}
-          </span>
-        ))}
-      </h4>
+      <div className="formats-container">
+        
+          {songData.discogsReleaseData.format.map((format, i) => (
+            <h4 className="formats">
+            <span>
+              {format}
+              {i > songData.discogsAlbumData.format - 1 && ", "}
+            </span>
+            </h4>
+          ))}
+        
+        <h4 className="formats country">
+            <span>{songData.discogsReleaseData.country}</span>
+        </h4>
+      </div>
     );
   }
 
@@ -134,4 +142,23 @@ export default function DiscogsData(props) {
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  .formats-container{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+    .formats {
+      border: solid black 2px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      width: fit-content;
+      margin-left: 0.5rem;
+      margin-block-start: 0;
+      margin-block-end: 0;
+      background-color: rgb(229, 255, 240);
+    }
+    .country {
+      background-color: #fbf2b8;
+    }
+  }
+`;

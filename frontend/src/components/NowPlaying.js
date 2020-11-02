@@ -5,8 +5,6 @@ import { ArrowRightIcon, BroadcastTowerIcon } from "react-line-awesome";
 import DiscogsData from "./DiscogsData";
 
 export default function NowPlaying(props) {
-  console.log("props", props);
-
   const { currentTrack, songData, releaseIndex, skipReleaseIndex } = props;
   const albumCover =
     songData.discogsAlbumData && songData.discogsAlbumData.images
@@ -104,15 +102,12 @@ const Container = styled.div`
   }
   .record-label {
     font-size: 1.4rem;
-  }
-  .formats {
-    border: solid black 2px;
-    padding: 3px 9px;
-    border-radius: 5px;
-    width: fit-content;
+    margin-bottom: 2rem;
   }
   .more-releases {
     width: fit-content;
+    margin-bottom: 2rem;
+    background-color: #83FFCD;
     span {
       font-family: regular;
       margin-left: 0.5rem;
