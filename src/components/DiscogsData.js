@@ -3,8 +3,7 @@ import styled from "styled-components";
 import { Button } from "../globalStyles.js";
 
 export default function DiscogsData(props) {
-  const { currentTrack, songData, releaseIndex, skipReleaseIndex, discogsReleaseData } = props;
-  console.log(songData.discogsReleaseData)
+  const { currentTrack, songData, releaseIndex, skipReleaseIndex } = props;
   function renderFormats() {
     return (
       <div className="formats-container">

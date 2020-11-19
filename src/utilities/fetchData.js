@@ -48,6 +48,7 @@ function fetchSpotifyAlbumData(currentTrack,
   )  
 }
 
+
 function searchDiscogsDatabase(
   dicogsApi,
   currentTrack,
@@ -75,8 +76,6 @@ function searchDiscogsDatabase(
             .replaceAll("&", "")
 
   const cleanArtistName = currentTrack.artists[0].name.replaceAll("&", "and")
-
-  console.log(cleanArtistName, cleanTrackName) 
 
   dicogsApi
     .searchDatabase({
