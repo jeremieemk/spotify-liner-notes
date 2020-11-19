@@ -43,7 +43,7 @@ export default function DiscogsData(props) {
   function renderArtistDetails() {
     if (
       songData.discogsArtistData &&
-      songData.discogsArtistData.profile != ""
+      songData.discogsArtistData.profile !== ""
     ) {
       const bio = songData.discogsArtistData.profile
         .replaceAll("[l=", "")
