@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSpotifyData } from "../hooks/useSpotifyData";
+import { useDiscogsData } from "../hooks/useDiscogsData";
 import { getCleanTrackDetails } from "../utils/trackUtils";
 
 function Dashboard() {
@@ -18,9 +19,18 @@ function Dashboard() {
     }
   }, []);
 
-  const {spotifyData, error} = useSpotifyData(token);
-  console.log('spotifyData', spotifyData);
-  console.log('error', error);
+  const { spotifyData, error } = useSpotifyData(token);
+  const {
+    discogsData,
+    discogsReleases,
+    error: discogsError,
+  } = useDiscogsData(spotifyData);
+
+  console.log("spotifyData", spotifyData);
+  console.log("error", error);
+  console.log("discogsData", discogsData);
+  console.log("discogsReleases", discogsReleases);
+  console.log("discogsError", discogsError);
 
   if (!token) {
     return (
