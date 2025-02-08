@@ -29,7 +29,6 @@ export function useSpotifyData(accessToken) {
         setSpotifyData(data.item);
       } catch (err) {
         setError(err.message);
-        console.error("Error fetching track:", err);
       }
     };
 
