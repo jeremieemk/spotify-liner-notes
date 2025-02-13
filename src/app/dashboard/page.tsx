@@ -5,8 +5,10 @@ import LoadingSpinner from "./components/loadingSpinner";
 import NoTrackPlaying from "./components/NoTrackPlaying";
 import TrackInfo from "./components/TrackInfos";
 import TrackCredits from "./components/TrackCredits";
+import ArtistBio from "./components/ArtistBio";
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
+import { useLastFmData } from "../hooks/useLastFmData";
 import { getCleanTrackDetails } from "../utils/trackUtils";
 import { getMaxCredits } from "../utils/trackUtils";
 
@@ -24,11 +26,11 @@ const Dashboard = () => {
 
   const { spotifyData } = useSpotifyData(token);
   const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
+  const { artist, song } = spotifyData ? getCleanTrackDetails(spotifyData) : { artist: '', song: '' };
+  const { artistBio } = useLastFmData({artist, song});
 
   if (!token) return <LoadingSpinner />;
   if (!spotifyData) return <NoTrackPlaying />;
-
-  const { artist, song } = getCleanTrackDetails(spotifyData);
   const maxCreditsData = getMaxCredits(
     { mostWantedRelease, oldestRelease },
     song
@@ -51,6 +53,7 @@ const Dashboard = () => {
               "Unknown"
             }
           />
+          <ArtistBio bio={artistBio} />
         </div>
       </div>
     </div>
