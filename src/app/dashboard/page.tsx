@@ -1,14 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import LoadingSpinner from "./components/loadingSpinner";
 import NoTrackPlaying from "./components/NoTrackPlaying";
 import TrackInfo from "./components/TrackInfos";
 import TrackCredits from "./components/TrackCredits";
 import ArtistBio from "./components/ArtistBio";
+import TrackMusicBrainzData from "./components/TrackMusicBrainzData";
+
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
 import { useLastFmData } from "../hooks/useLastFmData";
+import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
+
 import { getCleanTrackDetails } from "../utils/trackUtils";
 import { getMaxCredits } from "../utils/trackUtils";
 
@@ -26,8 +31,12 @@ const Dashboard = () => {
 
   const { spotifyData } = useSpotifyData(token);
   const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
-  const { artist, song } = spotifyData ? getCleanTrackDetails(spotifyData) : { artist: '', song: '' };
-  const { artistBio } = useLastFmData({artist, song});
+  const { artist, song } = spotifyData
+    ? getCleanTrackDetails(spotifyData)
+    : { artist: "", song: "" };
+  const { artistBio } = useLastFmData({ artist, song });
+  const { musicBrainzData } = useMusicBrainzData({ artist, song });
+  console.log('musicBrainzData', musicBrainzData);
 
   if (!token) return <LoadingSpinner />;
   if (!spotifyData) return <NoTrackPlaying />;
@@ -41,6 +50,7 @@ const Dashboard = () => {
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
+          <TrackMusicBrainzData data={musicBrainzData} />
           <TrackCredits
             releaseData={maxCreditsData.release}
             songName={song}
