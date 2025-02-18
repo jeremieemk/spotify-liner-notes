@@ -10,14 +10,19 @@ export function getCleanTrackDetails(spotifyData) {
     : spotifyData.name.replace(regex, "").replaceAll("&", "");
 
   const cleanArtistName = spotifyData.artists[0].name.replaceAll("&", "and");
-  return { artist: cleanArtistName, song: cleanTrackName };
+  const cleanAlbumName = spotifyData.album?.name.replaceAll("&", "and");
+
+  return {
+    artist: cleanArtistName,
+    song: cleanTrackName,
+    album: cleanAlbumName,
+  };
 }
 
 export const getMaxCredits = (
   { mostWantedRelease, oldestRelease },
   songName
 ) => {
-
   // Helper function to count total credits for a release
   const getTotalCredits = (release) => {
     if (!release?.tracklist) return 0;
