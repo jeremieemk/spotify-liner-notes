@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import LoadingSpinner from "./components/loadingSpinner";
 import NoTrackPlaying from "./components/NoTrackPlaying";
 import TrackInfo from "./components/TrackInfos";
-import TrackCredits from "./components/TrackCredits";
+import TrackDiscogsCredits from "./components/TrackDiscogsCredits";
 import ArtistBio from "./components/ArtistBio";
-import TrackMusicBrainzData from "./components/TrackMusicBrainzData";
+import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
@@ -51,9 +51,9 @@ const Dashboard = () => {
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
           {musicBrainzData?.recording && (
-            <TrackMusicBrainzData data={musicBrainzData.recording} />
+            <TrackMusicBrainzCredits data={musicBrainzData.recording} />
           )}
-          <TrackCredits
+          <TrackDiscogsCredits
             releaseData={maxCreditsData.release}
             songName={song}
             year={

@@ -1,22 +1,15 @@
-const TrackCredits = ({ releaseData, songName, year, country }) => (
-  <div className="bg-white/5 rounded-lg p-6">
-    <h2 className="text-xl font-bold mb-4">
-      {releaseData && (
-        <span className="text-sm font-normal text-gray-400 ml-2">
-          ({year} • {country})
-        </span>
-      )}
-    </h2>
+const TrackDiscogsCredits = ({ releaseData, songName }) => (
+  <div className="bg-white/5 rounded-lg p-6 mt-6">
+    <h2 className="text-xl font-bold mb-4">Discogs Details</h2>
     {renderTrackCredits(releaseData, songName) || (
       <p className="text-gray-400">No credits found</p>
     )}
   </div>
 );
 
-export default TrackCredits;
+export default TrackDiscogsCredits;
 
 const renderTrackCredits = (releaseData, songName) => {
-
   if (!releaseData) return null;
 
   const tracklistItem = releaseData.tracklist.find(
@@ -46,7 +39,7 @@ const renderTrackCredits = (releaseData, songName) => {
           </ul>
         </>
       )}
-            {albumCredits?.length && (
+      {albumCredits?.length && (
         <>
           <h3 className="text-lg font-semibold text-white my-4">
             Album Credits

@@ -2,26 +2,12 @@
 
 import React from "react";
 
-// Helper function to format track length (ms) into mm:ss
-function formatLength(ms) {
-  if (!ms) return "Unknown";
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
-const TrackMusicBrainzData = ({ data }) => {
+const TrackMusicBrainzCredits = ({ data }) => {
   if (!data) return null;
 
   const {
-    title,
-    length,
-    disambiguation,
-    "first-release-date": firstReleaseDate,
     isrcs,
     relations,
-    "artist-credit": artistCredit,
   } = data;
 
   // 1) Separate out the performance relation that leads to a "work"
@@ -85,42 +71,12 @@ const TrackMusicBrainzData = ({ data }) => {
 
       {/* Basic track info */}
       <div className="mb-4">
-        <p className="text-white">
-          <strong>Title:</strong> {title}{" "}
-          {disambiguation && (
-            <span className="text-sm font-normal text-gray-400 ml-2">
-              ({disambiguation})
-            </span>
-          )}
-        </p>
-        <p className="text-white">
-          <strong>First Release Date:</strong> {firstReleaseDate || "Unknown"}
-        </p>
-        <p className="text-white">
-          <strong>Length:</strong> {formatLength(length)}
-        </p>
         {isrcs && isrcs.length > 0 && (
           <p className="text-white">
             <strong>ISRC:</strong> {isrcs.join(", ")}
           </p>
         )}
       </div>
-
-      {/* Artist credit */}
-      {artistCredit && artistCredit.length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white my-4">
-            Artist Credit
-          </h3>
-          <ul className="list-disc list-inside">
-            {artistCredit.map((credit, idx) => (
-              <li key={idx} className="text-gray-300">
-                {credit.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Recording Credits (arranger, engineer, performer, etc.) */}
       {Object.keys(groupedRecordingRelations).length > 0 && (
@@ -173,22 +129,6 @@ const TrackMusicBrainzData = ({ data }) => {
       {/* Work Details (from the "performance" relation) */}
       {workData && (
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white my-4">
-            Work Details
-          </h3>
-          <p className="text-white">
-            <strong>Work Title:</strong> {workData.title}
-          </p>
-          {workData.languages && workData.languages.length > 0 && (
-            <p className="text-white">
-              <strong>Language(s):</strong> {workData.languages.join(", ")}
-            </p>
-          )}
-          {workData.disambiguation && (
-            <p className="text-white">
-              <strong>Disambiguation:</strong> {workData.disambiguation}
-            </p>
-          )}
 
           {/* Work sub-relations (composer, lyricist, etc.) */}
           {Object.keys(groupedWorkRelations).length > 0 && (
@@ -253,4 +193,4 @@ const TrackMusicBrainzData = ({ data }) => {
   );
 };
 
-export default TrackMusicBrainzData;
+export default TrackMusicBrainzCredits;
