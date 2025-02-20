@@ -67,7 +67,7 @@ const TrackMusicBrainzCredits = ({ data }) => {
 
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-8">
-      <h2 className="text-xl font-bold mb-4">MusicBrainz Details</h2>
+      <h2 className="text-2xl font-bold mb-4">MusicBrainz Details</h2>
 
       {/* Basic track info */}
       <div className="mb-4">

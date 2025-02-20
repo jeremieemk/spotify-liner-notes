@@ -1,6 +1,6 @@
 const TrackDiscogsCredits = ({ releaseData, songName }) => (
   <div className="bg-white/5 rounded-lg p-6 mt-6">
-    <h2 className="text-xl font-bold mb-4">Discogs Details</h2>
+    <h2 className="text-2xl font-bold mb-4">Discogs Details</h2>
     {renderTrackCredits(releaseData, songName) || (
       <p className="text-gray-400">No credits found</p>
     )}

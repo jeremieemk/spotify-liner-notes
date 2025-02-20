@@ -1,0 +1,81 @@
+// app/api/perplexity/route.ts
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+  const { artist, song, album } = await request.json();
+
+  const apiKey = process.env.PERPLEXITY_API_KEY;
+  if (!apiKey) {
+    console.error("Missing PERPLEXITY_API_KEY environment variable");
+    return NextResponse.json(
+      { error: "API key configuration error" },
+      { status: 500 }
+    );
+  }
+
+  const prompt = `Tell me about the song "${song}" by ${artist} on the album ${album}. Include details about:
+- Release year and label
+- Known credits (musicians, studios, engineers)
+- Notable aspects of the recording
+- Critical reception and reviews
+- Background about the artist/band
+- Song meaning and lyrics analysis
+Please provide detailed information in a structured manner with section titles and md formatting.
+Plese avoid writing the sections you don't have enough information about. Just skip those`;
+
+  try {
+    // Log the authentication header (without exposing the full API key)
+    const authHeader = `Bearer ${apiKey}`;
+    console.log("Auth header format:", authHeader.substring(0, 15) + "...");
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+      },
+      body: JSON.stringify({
+        model: "sonar-pro",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a knowledgeable music expert. Provide concise but detailed information about songs and artists.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.2,
+        top_p: 0.9,
+      }),
+    });
+
+    // Log response headers for debugging
+    console.log("Response status:", response.status);
+    console.log("Response headers:", Object.fromEntries([...response.headers]));
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Perplexity API error response:", {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText,
+      });
+      throw new Error(`API error: ${response.status} ${errorText}`);
+    }
+
+    const data = await response.json();
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error("Detailed Perplexity API error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch Perplexity data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}

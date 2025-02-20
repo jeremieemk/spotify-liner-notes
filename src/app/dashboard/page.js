@@ -1,25 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
 import LoadingSpinner from "./components/loadingSpinner";
 import NoTrackPlaying from "./components/NoTrackPlaying";
 import TrackInfo from "./components/TrackInfos";
 import TrackDiscogsCredits from "./components/TrackDiscogsCredits";
+import TrackOpenAiInfo from "./components/TrackOpenAiInfo";
 import ArtistBio from "./components/ArtistBio";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
+import TrackPerplexityInfo from "./components/TrackPerplexityInfo.tsx";
+import TrackMistralInfo from "./components/TrackMistralInfo";
+
 
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
 import { useLastFmData } from "../hooks/useLastFmData";
 import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
+import { useChatGPTData } from "../hooks/useChatGPTData";
+import { usePerplexityData } from "../hooks/usePerplexityData";
+import { useMistralData } from "../hooks/useMistralData";
 
 import { getCleanTrackDetails, getMaxCredits } from "../utils/trackUtils";
 
+
+
 const Dashboard = () => {
   const [token, setToken] = useState("");
-  const [chatGPTResponse, setChatGPTResponse] = useState<string>("");
-  const [isLoadingGPT, setIsLoadingGPT] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("spotify_access_token");
@@ -37,30 +43,23 @@ const Dashboard = () => {
     : { artist: "", song: "", album: "" };
   const { artistBio } = useLastFmData({ artist, song });
   const { musicBrainzData } = useMusicBrainzData({ artist, song, album });
+  const { chatGPTResponse, isLoading, error } = useChatGPTData(
+    artist,
+    song,
+    album
+  );
+  const {
+    perplexityResponse,
+    isLoading: perplexityLoading,
+    error: perplexityError,
+  } = usePerplexityData(artist, song, album);
+  const {
+    mistralResponse,
+    isLoading: mistralLoading,
+    error: mistralError,
+  } = useMistralData(artist, song, album);
 
-  useEffect(() => {
-    async function fetchChatGPTData() {
-      if (!artist || !song) return;
-
-      setIsLoadingGPT(true);
-      try {
-        const response = await getChatGPTData(artist, song, album);
-        // Extract just the response content, not the whole prompt
-        const content = response?.data?.choices?.[0]?.message?.content || "";
-        console.log("ChatGPT response:", content);
-        setChatGPTResponse(content);
-      } catch (error) {
-        console.error("Error fetching ChatGPT data:", error);
-        setChatGPTResponse("Failed to load track information.");
-      } finally {
-        setIsLoadingGPT(false);
-      }
-    }
-
-    if (artist && song) {
-      fetchChatGPTData();
-    }
-  }, [artist, song]);
+  console.log("mistralResponse", mistralResponse);
 
   if (!token) return <LoadingSpinner />;
   if (!spotifyData) return <NoTrackPlaying />;
@@ -74,31 +73,24 @@ const Dashboard = () => {
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
-          <div className="p-8">
-            <h1 className="text-2xl font-bold">Track Details via ChatGPT</h1>
-            <div className="mt-4 p-4 bg-gray-800 rounded">
-              {isLoadingGPT ? (
-                <div className="flex justify-center">
-                  <LoadingSpinner />
-                </div>
-              ) : chatGPTResponse ? (
-                <div className="whitespace-pre-wrap">{chatGPTResponse}</div>
-              ) : (
-                <p>No information available</p>
-              )}
-            </div>
-          </div>
+          <TrackMistralInfo
+            data={mistralResponse}
+            isLoading={mistralLoading}
+            error={mistralError}
+          />
+          <TrackPerplexityInfo
+            data={perplexityResponse}
+            isLoading={perplexityLoading}
+            error={perplexityError}
+          />
+          <TrackOpenAiInfo
+            data={chatGPTResponse}
+            isLoading={isLoading}
+            error={error}
+          />
           <TrackDiscogsCredits
             releaseData={maxCreditsData.release}
             songName={song}
-            year={
-              oldestRelease?.year || maxCreditsData.release?.year || "Unknown"
-            }
-            country={
-              oldestRelease?.country ||
-              maxCreditsData.release?.country ||
-              "Unknown"
-            }
           />
           {musicBrainzData?.recording && (
             <TrackMusicBrainzCredits data={musicBrainzData.recording} />
@@ -111,19 +103,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-async function getChatGPTData(artist: string, track: string, album: string) {
-  const res = await fetch("http://localhost:3000/api/chatgpt", {
-    // Adjust URL as needed
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ artist, track, album }),
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch ChatGPT data");
-  }
-  return res.json();
-}

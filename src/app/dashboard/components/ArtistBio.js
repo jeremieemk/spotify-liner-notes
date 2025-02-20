@@ -20,7 +20,7 @@ const ArtistBio = ({ bio }) => {
 
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-6">
-      <h2 className="text-xl font-bold mb-4">Artist Bio</h2>
+      <h2 className="text-2xl font-bold mb-4">Artist Bio</h2>
       <div
         className="text-gray-300"
         dangerouslySetInnerHTML={{ __html: paragraphedBio }}
