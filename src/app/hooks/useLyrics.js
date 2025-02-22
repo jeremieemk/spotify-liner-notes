@@ -2,27 +2,29 @@
 
 import { useState, useEffect } from "react";
 
-export function useLyrics(artist, title) {
+export function useLyrics(artist, song) {
   const [lyrics, setLyrics] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [lyricsLoading, setLyricsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!artist || !title) {
+    if (!artist || !song) {
       setLyrics(null);
       setError(null);
+      setLyricsLoading(false);
       return;
     }
 
     const fetchLyrics = async () => {
-      setIsLoading(true);
+      setLyrics(null);
+      setLyricsLoading(true);
       setError(null);
 
       try {
         const response = await fetch(
           `https://api.lyrics.ovh/v1/${encodeURIComponent(
             artist
-          )}/${encodeURIComponent(title)}`
+          )}/${encodeURIComponent(song)}`
         );
 
         if (!response.ok) {
@@ -39,12 +41,16 @@ export function useLyrics(artist, title) {
         console.error("Error fetching lyrics:", err);
         setError(err.message);
       } finally {
-        setIsLoading(false);
+        setLyricsLoading(false);
       }
     };
 
     fetchLyrics();
-  }, [artist, title]);
+  }, [artist, song]);
 
-  return { lyrics, isLoading, error };
+  useEffect(() => {
+
+  }, [artist, song]);
+
+  return { lyrics, lyricsLoading, error };
 }

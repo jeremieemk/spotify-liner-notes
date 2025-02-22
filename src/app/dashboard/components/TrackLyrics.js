@@ -1,9 +1,5 @@
-import { useLyrics } from "../../hooks/useLyrics";
 
-const TrackLyrics = ({ artist, title }) => {
-  const { lyrics, isLoading, error } = useLyrics(artist, title);
-
-  if (!artist || !title) return null;
+const TrackLyrics = ({ lyrics, isLoading, error }) => {
 
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-8">

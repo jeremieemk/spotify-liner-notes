@@ -36,7 +36,6 @@ Please avoid writing the sections you don't have enough information about. Just 
     }
     const data = chatResponse.choices[0].message.content;
     console.log("Mistral API response:", chatResponse);
-    console.log("data:", data);
     return NextResponse.json({ data });
   } catch (error) {
     console.error("Detailed Mistral API error:", error);

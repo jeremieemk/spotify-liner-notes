@@ -12,8 +12,6 @@ export function useMistralData(artist, song, album) {
       setIsLoading(true);
       setError(null);
 
-      console.log("Fetching Mistral data", artist, song, album);
-
       try {
         const response = await fetch("/api/mistral", {
           method: "POST",

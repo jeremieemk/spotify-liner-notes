@@ -1,8 +1,9 @@
 // app/api/perplexity/route.ts
 import { NextResponse } from "next/server";
+import { getPrompt } from "../getPrompt";
 
 export async function POST(request: Request) {
-  const { artist, song, album } = await request.json();
+  const { artist, song, album, lyrics } = await request.json();
 
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
@@ -13,20 +14,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const prompt = `Tell me about the song "${song}" by ${artist} on the album ${album}. Include details about:
-- Release year and label
-- Known credits (musicians, studios, engineers)
-- Notable aspects of the recording
-- Critical reception and reviews
-- Background about the artist/band
-- Song meaning and lyrics analysis
-Please provide detailed information in a structured manner with section titles and md formatting.
-Plese avoid writing the sections you don't have enough information about. Just skip those`;
+  console.log("Received request for:", { artist, song, album, lyrics });
+
+  const prompt = getPrompt(artist, song, album, lyrics);
 
   try {
     // Log the authentication header (without exposing the full API key)
     const authHeader = `Bearer ${apiKey}`;
-    console.log("Auth header format:", authHeader.substring(0, 15) + "...");
+    // console.log("Auth header format:", authHeader.substring(0, 15) + "...");
 
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
@@ -53,8 +48,8 @@ Plese avoid writing the sections you don't have enough information about. Just s
     });
 
     // Log response headers for debugging
-    console.log("Response status:", response.status);
-    console.log("Response headers:", Object.fromEntries([...response.headers]));
+    // console.log("Response status:", response.status);
+    // console.log("Response headers:", Object.fromEntries([...response.headers]));
 
     if (!response.ok) {
       const errorText = await response.text();

@@ -1,27 +1,23 @@
-// hooks/usePerplexityData.ts
 import { useState, useEffect } from "react";
 
-export function usePerplexityData(artist, song, album) {
+export function usePerplexityData(artist, song, album, lyrics, lyricsLoading) {
   const [perplexityResponse, setPerplexityResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchData() {
-      if (!artist || !song) return;
+      // Wait until lyricsLoading is false, but do not check for lyrics being null.
+      if (!artist || !song || lyricsLoading) return;
 
       setIsLoading(true);
       setError(null);
 
-      console.log("Fetching Perplexity data", artist, song, album );
-
       try {
         const response = await fetch("/api/perplexity", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ artist, song, album }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ artist, song, album, lyrics }),
         });
 
         if (!response.ok) {
@@ -38,7 +34,7 @@ export function usePerplexityData(artist, song, album) {
     }
 
     fetchData();
-  }, [artist, song, album]);
+  }, [artist, song, album, lyrics, lyricsLoading]);
 
   return { perplexityResponse, isLoading, error };
 }

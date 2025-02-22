@@ -1,5 +1,5 @@
 import React from 'react';
-import LoadingSpinner from './loadingSpinner';
+import LoadingSpinner from './LoadingSpinner';
 import ReactMarkdown from 'react-markdown';
 
 const TrackOpenAiInfo = ({ data, isLoading, error }) => {
