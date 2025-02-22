@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Discojs } from "discojs";
 
 export function useDiscogsData(spotifyData) {
@@ -9,39 +7,53 @@ export function useDiscogsData(spotifyData) {
   const [oldestRelease, setOldestRelease] = useState(null);
   const [error, setError] = useState(null);
 
+  // Memoize the cleaned track and artist names
+  const { cleanTrackName, cleanArtistName } = useMemo(() => {
+    if (!spotifyData) return { cleanTrackName: "", cleanArtistName: "" };
+
+    const regex = /\s*\([^)]*\)/g;
+    const trackName = spotifyData.name.includes("-")
+      ? spotifyData.name
+          .replace(regex, "")
+          .replaceAll("&", "")
+          .substring(0, spotifyData.name.indexOf("-"))
+      : spotifyData.name.replace(regex, "").replaceAll("&", "");
+
+    const artistName = spotifyData.artists[0].name.replaceAll("&", "and");
+
+    return {
+      cleanTrackName: trackName,
+      cleanArtistName: artistName
+    };
+  }, [spotifyData?.name, spotifyData?.artists[0]?.name]);
+
   useEffect(() => {
-    const userToken = process.env.NEXT_PUBLIC_DISCOGS_KEY.trim();
+    const userToken = process.env.NEXT_PUBLIC_DISCOGS_KEY?.trim();
     if (!userToken) {
       setError("Invalid Discogs API token");
       return;
     }
 
-    const discogsApi = new Discojs({
-      userToken,
-    });
+    // Reset states when track/artist changes
+    setDiscogsData(null);
+    setMostWantedRelease(null);
+    setOldestRelease(null);
+    setError(null);
+
+    if (!cleanTrackName || !cleanArtistName) return;
+
+    const discogsApi = new Discojs({ userToken });
+    let isCanceled = false;
 
     async function fetchDiscogsData() {
       try {
-        const regex = /\s*\([^)]*\)/g;
-        const cleanTrackName = spotifyData.name.includes("-")
-          ? spotifyData.name
-              .replace(regex, "")
-              .replaceAll("&", "")
-              .substring(0, spotifyData.name.indexOf("-"))
-          : spotifyData.name.replace(regex, "").replaceAll("&", "");
-
-        const cleanArtistName = spotifyData.artists[0].name.replaceAll(
-          "&",
-          "and"
-        );
-
-        // Search for releases
         const searchResults = await discogsApi.searchDatabase({
           artist: cleanArtistName,
           track: cleanTrackName,
           type: "release",
         });
 
+        if (isCanceled) return;
 
         if (searchResults.results.length > 0) {
           setDiscogsData(searchResults.results);
@@ -53,53 +65,48 @@ export function useDiscogsData(spotifyData) {
 
           // Sort by year (oldest first)
           const sortedByYear = [...searchResults.results]
-            .filter((release) => release.year) // Filter out releases without year
+            .filter((release) => release.year)
             .sort((a, b) => parseInt(a.year) - parseInt(b.year));
 
-          // Fetch detailed information for both
-          if (sortedByWants[0]) {
-            const wantedDetails = await discogsApi.getRelease(
-              sortedByWants[0].id
-            );
-            setMostWantedRelease(wantedDetails);
-          }
+          // Fetch details in parallel
+          if (sortedByWants[0] && sortedByYear[0]) {
+            const [wantedDetails, oldestDetails] = await Promise.all([
+              discogsApi.getRelease(sortedByWants[0].id),
+              discogsApi.getRelease(sortedByYear[0].id)
+            ]);
 
-          if (sortedByYear[0]) {
-            const oldestDetails = await discogsApi.getRelease(
-              sortedByYear[0].id
-            );
-            setOldestRelease(oldestDetails);
+            if (!isCanceled) {
+              setMostWantedRelease(wantedDetails);
+              setOldestRelease(oldestDetails);
+            }
           }
         } else {
-          console.log("No Discogs data found");
           setError("No matching releases found");
         }
       } catch (fetchError) {
-        console.error("Discogs API Error:", fetchError);
-
-        if (fetchError instanceof Error) {
-          if (fetchError.message.includes("authentication")) {
-            setError("Authentication failed. Check your Discogs API token.");
-          } else {
-            setError(`API Error: ${fetchError.message}`);
-          }
-        } else {
-          setError("Unknown Discogs API error");
+        if (!isCanceled) {
+          console.error("Discogs API Error:", fetchError);
+          setError(
+            fetchError.message.includes("authentication")
+              ? "Authentication failed. Check your Discogs API token."
+              : `API Error: ${fetchError.message}`
+          );
         }
       }
     }
 
-    if (spotifyData) {
-      fetchDiscogsData();
-    }
-  }, [spotifyData]);
+    fetchDiscogsData();
+
+    return () => {
+      isCanceled = true;
+    };
+  }, [cleanTrackName, cleanArtistName]); // Only depends on cleaned names
 
   return {
     discogsData,
     mostWantedRelease,
     oldestRelease,
     error,
-    // Including some helper data for comparison
     comparison: discogsData
       ? {
           totalReleases: discogsData.length,

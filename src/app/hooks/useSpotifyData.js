@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export function useSpotifyData(accessToken) {
   const [spotifyData, setSpotifyData] = useState(null);
+  const [trackProgress, setTrackProgress] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -15,6 +16,7 @@ export function useSpotifyData(accessToken) {
 
         if (response.status === 204) {
           setSpotifyData(null);
+          setTrackProgress(null);
           return;
         }
 
@@ -27,16 +29,17 @@ export function useSpotifyData(accessToken) {
 
         const data = await response.json();
         setSpotifyData(data.item);
+        setTrackProgress(data['progress_ms']);
       } catch (err) {
         setError(err.message);
       }
     };
 
     fetchCurrentTrack();
-    const interval = setInterval(fetchCurrentTrack, 10000);
+    const interval = setInterval(fetchCurrentTrack, 1000);
 
     return () => clearInterval(interval);
   }, [accessToken]);
 
-  return { spotifyData, error };
+  return { spotifyData, trackProgress, error };
 }

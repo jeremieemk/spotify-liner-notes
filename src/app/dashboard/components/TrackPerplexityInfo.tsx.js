@@ -5,8 +5,8 @@ import ReactMarkdown from 'react-markdown';
 
 const TrackPerplexityInfo = ({ data, isLoading, error }) => {
   const markdownComponents = {
-    h3: ({ children }) => (
-      <h3 className="text-lg font-semibold text-white mt-6 mb-2">{children}</h3>
+    h2: ({ children }) => (
+      <h2 className="text-lg font-semibold text-white mt-6 mb-2">{children}</h2>
     ),
     p: ({ children }) => (
       <p className="text-gray-300 mb-4">{children}</p>

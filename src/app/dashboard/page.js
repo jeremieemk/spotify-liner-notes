@@ -8,9 +8,9 @@ import TrackDiscogsCredits from "./components/TrackDiscogsCredits";
 import TrackOpenAiInfo from "./components/TrackOpenAiInfo";
 import ArtistBio from "./components/ArtistBio";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
+import ProgressBar from "./components/ProgressBar";
 import TrackPerplexityInfo from "./components/TrackPerplexityInfo.tsx";
 import TrackMistralInfo from "./components/TrackMistralInfo";
-
 
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
@@ -21,8 +21,6 @@ import { usePerplexityData } from "../hooks/usePerplexityData";
 import { useMistralData } from "../hooks/useMistralData";
 
 import { getCleanTrackDetails, getMaxCredits } from "../utils/trackUtils";
-
-
 
 const Dashboard = () => {
   const [token, setToken] = useState("");
@@ -36,11 +34,16 @@ const Dashboard = () => {
     }
   }, []);
 
-  const { spotifyData } = useSpotifyData(token);
-  const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
+  const { spotifyData, trackProgress } = useSpotifyData(token);
   const { artist, song, album } = spotifyData
     ? getCleanTrackDetails(spotifyData)
     : { artist: "", song: "", album: "" };
+
+  const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
+  const maxCreditsData = getMaxCredits(
+    { mostWantedRelease, oldestRelease },
+    song
+  );
   const { artistBio } = useLastFmData({ artist, song });
   const { musicBrainzData } = useMusicBrainzData({ artist, song, album });
   const { chatGPTResponse, isLoading, error } = useChatGPTData(
@@ -59,19 +62,18 @@ const Dashboard = () => {
     error: mistralError,
   } = useMistralData(artist, song, album);
 
-  console.log("mistralResponse", mistralResponse);
-
   if (!token) return <LoadingSpinner />;
+
   if (!spotifyData) return <NoTrackPlaying />;
-  const maxCreditsData = getMaxCredits(
-    { mostWantedRelease, oldestRelease },
-    song
-  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-black to-gray-900 text-white p-8">
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
+          <ProgressBar
+            maxValue={spotifyData?.duration_ms}
+            currentValue={trackProgress}
+          />
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
           <TrackMistralInfo
             data={mistralResponse}

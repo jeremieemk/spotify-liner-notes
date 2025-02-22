@@ -35,7 +35,7 @@ Plese avoid writing the sections you don't have enough information about. Just s
         Authorization: authHeader,
       },
       body: JSON.stringify({
-        model: "sonar-pro",
+        model: "sonar",
         messages: [
           {
             role: "system",
