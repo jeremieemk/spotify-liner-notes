@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 export function useSpotifyData(accessToken) {
   const [spotifyData, setSpotifyData] = useState(null);
   const [trackProgress, setTrackProgress] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -17,19 +18,21 @@ export function useSpotifyData(accessToken) {
         if (response.status === 204) {
           setSpotifyData(null);
           setTrackProgress(null);
+          setIsPlaying(false);
           return;
         }
 
         if (response.status === 401) {
           setError("Authentication error");
-          sessionStorage.removeItem("spotify_access_token");
+          localStorage.removeItem("spotify_access_token");
           window.location.href = "/";
           return;
         }
 
         const data = await response.json();
         setSpotifyData(data.item);
-        setTrackProgress(data['progress_ms']);
+        setTrackProgress(data.progress_ms);
+        setIsPlaying(data.is_playing);
       } catch (err) {
         setError(err.message);
       }
@@ -41,5 +44,5 @@ export function useSpotifyData(accessToken) {
     return () => clearInterval(interval);
   }, [accessToken]);
 
-  return { spotifyData, trackProgress, error };
+  return { spotifyData, trackProgress, isPlaying, error };
 }

@@ -11,6 +11,7 @@ import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 import ProgressBar from "./components/ProgressBar";
 import TrackPerplexityInfo from "./components/TrackPerplexityInfo.tsx";
 import TrackMistralInfo from "./components/TrackMistralInfo";
+import SpotifyControls from "./components/SpotifyControls";
 
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
@@ -34,7 +35,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  const { spotifyData, trackProgress } = useSpotifyData(token);
+  const { spotifyData, trackProgress, isPlaying } = useSpotifyData(token);
   const { artist, song, album } = spotifyData
     ? getCleanTrackDetails(spotifyData)
     : { artist: "", song: "", album: "" };
@@ -74,6 +75,7 @@ const Dashboard = () => {
             maxValue={spotifyData?.duration_ms}
             currentValue={trackProgress}
           />
+          <SpotifyControls token={token} isPlaying={isPlaying} />
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
           <TrackMistralInfo
             data={mistralResponse}

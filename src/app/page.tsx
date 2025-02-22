@@ -10,7 +10,7 @@ async function initiateSpotifyAuth() {
     : "http://localhost:3000/callback";
     
   const scope = [
-    "user-read-playback-state",
+    "user-read-playback-state", "user-modify-playback-state"
   ].join(" ");
 
   const params = new URLSearchParams({
