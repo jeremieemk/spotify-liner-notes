@@ -9,6 +9,7 @@ export function usePerplexityData(artist, song, album, lyrics, lyricsLoading) {
     async function fetchData() {
       // Wait until lyricsLoading is false, but do not check for lyrics being null.
       if (!artist || !song || lyricsLoading) return;
+      console.log('Fetching perplexity data lyricsLoading:', lyricsLoading);
 
       setIsLoading(true);
       setError(null);
@@ -34,7 +35,7 @@ export function usePerplexityData(artist, song, album, lyrics, lyricsLoading) {
     }
 
     fetchData();
-  }, [artist, song, album, lyrics, lyricsLoading]);
+  }, [lyrics, lyricsLoading]);
 
   return { perplexityResponse, isLoading, error };
 }

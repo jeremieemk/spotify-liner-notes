@@ -11,11 +11,12 @@ export function useLyrics(artist, song) {
     if (!artist || !song) {
       setLyrics(null);
       setError(null);
-      setLyricsLoading(false);
+      setLyricsLoading(true);
       return;
     }
 
     const fetchLyrics = async () => {
+      console.log('Fetching lyrics for:', artist, song);
       setLyrics(null);
       setLyricsLoading(true);
       setError(null);
@@ -36,11 +37,13 @@ export function useLyrics(artist, song) {
         }
 
         const data = await response.json();
+        console.log('Lyrics received:', data.lyrics ? 'Yes' : 'No');
         setLyrics(data.lyrics);
       } catch (err) {
         console.error("Error fetching lyrics:", err);
         setError(err.message);
       } finally {
+        console.log('Lyrics loading complete');
         setLyricsLoading(false);
       }
     };
@@ -49,8 +52,8 @@ export function useLyrics(artist, song) {
   }, [artist, song]);
 
   useEffect(() => {
-
-  }, [artist, song]);
+    console.log('Current lyrics state:', { lyrics, lyricsLoading });
+  }, [lyrics, lyricsLoading]);
 
   return { lyrics, lyricsLoading, error };
 }
