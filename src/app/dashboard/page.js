@@ -13,6 +13,7 @@ import TrackPerplexityInfo from "./components/TrackPerplexityInfo.tsx";
 import TrackMistralInfo from "./components/TrackMistralInfo";
 import SpotifyControls from "./components/SpotifyControls";
 import TrackLyrics from "./components/TrackLyrics";
+import TrackAudioContent from "./components/TrackAudioContent";
 
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
@@ -78,6 +79,10 @@ const Dashboard = () => {
             currentValue={trackProgress}
           />
           <SpotifyControls token={token} isPlaying={isPlaying} />
+          <TrackAudioContent 
+            perplexityData={perplexityResponse}
+            isLoading={perplexityLoading}
+          />
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
           {/* <TrackMistralInfo
             data={mistralResponse}
