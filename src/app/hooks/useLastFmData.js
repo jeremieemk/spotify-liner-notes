@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const LAST_FM_BASE_URL = "http://ws.audioscrobbler.com/2.0/";
-const API_KEY = process.env.NEXT_PUBLIC_LAST_FM_KEY.trim();
+const API_KEY = process.env.NEXT_PUBLIC_LAST_FM_KEY?.trim();
 
 export function useLastFmData(cleanTrackDetails) {
   const [artistBio, setArtistBio] = useState(null);
