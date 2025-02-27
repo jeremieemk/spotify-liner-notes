@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
-export function useChatGPTData(artist, song, album) {
+export function useChatGPTData(songData) {
   const [chatGPTResponse, setChatGPTResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchChatGPTData() {
-      if (!artist || !song) return;
+      if (!songData) return;
 
       setIsLoading(true);
       setError(null);
@@ -16,7 +16,7 @@ export function useChatGPTData(artist, song, album) {
         const res = await fetch("http://localhost:3000/api/chatgpt", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ artist, track: song, album }),
+          body: JSON.stringify({ songData }),
         });
 
         if (!res.ok) {
@@ -36,7 +36,7 @@ export function useChatGPTData(artist, song, album) {
     }
 
     fetchChatGPTData();
-  }, [artist, song, album]);
+  }, [songData]);
 
   return { chatGPTResponse, isLoading, error };
 }

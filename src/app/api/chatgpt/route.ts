@@ -2,16 +2,17 @@
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { artist, track, album } = await request.json();
+  const { songData } = await request.json();
 
   // Simplified prompt that directly asks for information
-  const prompt = `Tell me about the song "${track}" by ${artist} on the album .${album} Include details about:
-- Release year and label
-- Known credits (musicians, studios, engineers)
-- Notable aspects of the recording
-- Critical reception and reviews
-- Background about the artist/band
-- Song meaning and lyrics analysis`;
+  const prompt = `This some data about a song that I am currently streaming on my music app. 
+  When the song ends, I would like to know more about what I just heard.
+  Use the data to create a radio-dj type speech about the song.
+  Focus on fun facts and narratives about the song and artist.
+  The size of the speech should be adapted to the format - a radio DJ speech to give some context about the song.
+  Use common radio-dj type phrases like 'the song you just heard was', 'stay tuned', etc...
+   ${songData}
+  `;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
           {
             role: "system",
             content:
-              "You are a knowledgeable music expert. Provide concise but detailed information about songs and artists.",
+              "You are a knowledgeable music expert and an entertaining radio host.",
           },
           {
             role: "user",

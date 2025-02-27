@@ -1,9 +1,8 @@
-// components/TrackAudioContent.tsx
 import React from "react";
 import { useElevenLabs } from "../../hooks/useElevenLabs";
 import AudioPlayer from "./AudioPlayer";
 
-const TrackAudioContent = ({ perplexityData, isLoading }) => {
+const TrackAudioContent = ({ llmData, isLoading }) => {
   const {
     generateAudio,
     audioUrl,
@@ -12,16 +11,16 @@ const TrackAudioContent = ({ perplexityData, isLoading }) => {
   } = useElevenLabs();
 
   const handleGenerateAudio = React.useCallback(() => {
-    if (perplexityData) {
-      generateAudio(perplexityData);
+    if (llmData) {
+      generateAudio(llmData);
     }
-  }, [perplexityData, generateAudio]);
+  }, [llmData, generateAudio]);
 
   return (
     <div className="bg-white/5 rounded-lg p-6 my-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Audio Commentary</h2>
-        {perplexityData && !isLoading && (
+        {llmData && !isLoading && (
           <button
             onClick={handleGenerateAudio}
             className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
@@ -41,8 +40,8 @@ const TrackAudioContent = ({ perplexityData, isLoading }) => {
       />
 
       {isLoading ? (
-        <p className="text-gray-400">Loading perplexity data...</p>
-      ) : !perplexityData ? (
+        <p className="text-gray-400">Loading ll data...</p>
+      ) : !llmData ? (
         <p className="text-gray-400">
           No content available for audio generation
         </p>

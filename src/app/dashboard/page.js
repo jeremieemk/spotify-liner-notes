@@ -50,16 +50,13 @@ const Dashboard = () => {
   );
   const { artistBio } = useLastFmData({ artist, song });
   const { musicBrainzData } = useMusicBrainzData({ artist, song, album });
-  // const { chatGPTResponse, isLoading, error } = useChatGPTData(
-  //   artist,
-  //   song,
-  //   album
-  // );
   const {
     perplexityResponse,
     isLoading: perplexityLoading,
     error: perplexityError,
   } = usePerplexityData(artist, song, album, lyrics, lyricsLoading);
+  const { chatGPTResponse, isLoading: chatGPTLoading } =
+    useChatGPTData(perplexityResponse);
   // const {
   //   mistralResponse,
   //   isLoading: mistralLoading,
@@ -79,9 +76,9 @@ const Dashboard = () => {
             currentValue={trackProgress}
           />
           <SpotifyControls token={token} isPlaying={isPlaying} />
-          <TrackAudioContent 
-            perplexityData={perplexityResponse}
-            isLoading={perplexityLoading}
+          <TrackAudioContent
+            llmData={chatGPTResponse}
+            isLoading={chatGPTLoading}
           />
           <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
           {/* <TrackMistralInfo
@@ -107,7 +104,11 @@ const Dashboard = () => {
             <TrackMusicBrainzCredits data={musicBrainzData.recording} />
           )}
           <ArtistBio bio={artistBio} />
-          <TrackLyrics lyrics={lyrics} isLoading={lyricsLoading} error={error} />
+          <TrackLyrics
+            lyrics={lyrics}
+            isLoading={lyricsLoading}
+            error={error}
+          />
         </div>
       </div>
     </div>
