@@ -57,7 +57,6 @@ const Dashboard = () => {
   const {
     chatGPTResponse,
     isLoading: chatGPTLoading,
-    error: chatGPTError,
   } = useChatGPTData(perplexityResponse);
 
   const {
