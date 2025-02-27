@@ -54,10 +54,8 @@ const Dashboard = () => {
     error: perplexityError,
   } = usePerplexityData(artist, song, album, lyrics, lyricsLoading);
 
-  const {
-    chatGPTResponse,
-    isLoading: chatGPTLoading,
-  } = useChatGPTData(perplexityResponse);
+  const { chatGPTResponse, isLoading: chatGPTLoading } =
+    useChatGPTData(perplexityResponse);
 
   const {
     mistralResponse,
@@ -105,7 +103,7 @@ const Dashboard = () => {
             <TrackMusicBrainzCredits data={musicBrainzData.recording} />
           )}
 
-          <ArtistBio bio={artistBio} />
+          {artistBio && <ArtistBio bio={artistBio} />}
 
           <TrackLyrics
             lyrics={lyrics}

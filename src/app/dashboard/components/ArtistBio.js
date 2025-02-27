@@ -43,7 +43,7 @@ const createParagraphs = (text) => {
     let wordCount = 0;
     
     sentences.forEach(sentence => {
-      const sentenceWords = sentence.trim().split(/\s+/).length;
+      const sentenceWords = sentence?.trim().split(/\s+/).length;
       
       // Start new paragraph if:
       // 1. Current paragraph is getting too long (> ~50 words)
@@ -58,7 +58,7 @@ const createParagraphs = (text) => {
         }
       }
       
-      currentParagraph.push(sentence.trim());
+      currentParagraph.push(sentence?.trim());
       wordCount += sentenceWords;
     });
     
