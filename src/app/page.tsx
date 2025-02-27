@@ -6,7 +6,7 @@ async function initiateSpotifyAuth() {
   
   const client_id = process.env.SPOTIFY_CLIENT_ID;
   const redirect_uri = process.env.NODE_ENV === "production" 
-    ? "https://spotify-liner-notes.netlify.app/callback"
+    ? "https://spotify-liner-notes.vercel.app/callback"
     : "http://localhost:3000/callback";
     
   const scope = [
