@@ -13,7 +13,7 @@ export function useChatGPTData(songData) {
       setError(null);
 
       try {
-        const res = await fetch("http://localhost:3000/api/chatgpt", {
+        const res = await fetch("/api/perplexity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ songData }),
