@@ -13,7 +13,7 @@ export function useChatGPTData(songData) {
       setError(null);
 
       try {
-        const res = await fetch("/api/perplexity", {
+        const res = await fetch("/api/chatgpt", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ songData }),
@@ -26,6 +26,8 @@ export function useChatGPTData(songData) {
         const data = await res.json();
         // Extract the content from the response
         const content = data?.data?.choices?.[0]?.message?.content || "";
+
+        console.log("ChatGPT response:", content);
         setChatGPTResponse(content);
       } catch (err) {
         console.error("Error fetching ChatGPT data:", err);
