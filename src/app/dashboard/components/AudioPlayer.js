@@ -1,9 +1,21 @@
 import React from "react";
 import { Play, Pause, RefreshCw } from "lucide-react";
 
-const AudioPlayer = ({ audioUrl, isLoading, onRegenerate }) => {
+const AudioPlayer = ({
+  audioUrl,
+  isLoading,
+  onRegenerate,
+  onPlayingChange,
+}) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
   const audioRef = React.useRef(null);
+
+  // Report playing state to parent component whenever it changes
+  React.useEffect(() => {
+    if (onPlayingChange) {
+      onPlayingChange(isPlaying);
+    }
+  }, [isPlaying, onPlayingChange]);
 
   const handlePlayPause = () => {
     if (audioRef.current) {

@@ -16,7 +16,6 @@ export function useLyrics(artist, song) {
     }
 
     const fetchLyrics = async () => {
-      console.log('Fetching lyrics for:', artist, song);
       setLyrics(null);
       setLyricsLoading(true);
       setError(null);
@@ -37,13 +36,11 @@ export function useLyrics(artist, song) {
         }
 
         const data = await response.json();
-        console.log('Lyrics received:', data.lyrics ? 'Yes' : 'No');
         setLyrics(data.lyrics);
       } catch (err) {
         console.error("Error fetching lyrics:", err);
         setError(err.message);
       } finally {
-        console.log('Lyrics loading complete');
         setLyricsLoading(false);
       }
     };

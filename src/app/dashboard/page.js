@@ -26,6 +26,9 @@ import { getCleanTrackDetails, getMaxCredits } from "../utils/trackUtils";
 
 const Dashboard = () => {
   const [token, setToken] = useState("");
+  const [isAudioCommentaryPlaying, setIsAudioCommentaryPlaying] = useState(false);
+  const [lastTrackData, setLastTrackData] = useState(null);
+  // No need to track Spotify state at Dashboard level anymore
 
   useEffect(() => {
     const storedToken = localStorage.getItem("spotify_access_token");
@@ -37,11 +40,28 @@ const Dashboard = () => {
   }, []);
 
   const { spotifyData, trackProgress, isPlaying } = useSpotifyData(token);
-  const { artist, song, album } = spotifyData
-    ? getCleanTrackDetails(spotifyData)
+  
+  // Keep track of the last valid track data
+  useEffect(() => {
+    if (spotifyData) {
+      setLastTrackData(spotifyData);
+    }
+  }, [spotifyData]);
+  
+  // Handle audio commentary state changes
+  const handleAudioCommentaryChange = (isPlaying) => {
+    setIsAudioCommentaryPlaying(isPlaying);
+  };
+  
+  // Use either current or last track data
+  const activeData = spotifyData || (isAudioCommentaryPlaying ? lastTrackData : null);
+  
+  const { artist, song, album } = activeData
+    ? getCleanTrackDetails(activeData)
     : { artist: "", song: "", album: "" };
+    
   const { lyrics, lyricsLoading, error: lyricsError } = useLyrics(artist, song);
-  const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
+  const { mostWantedRelease, oldestRelease } = useDiscogsData(activeData);
   const maxCreditsData = getMaxCredits(
     { mostWantedRelease, oldestRelease },
     song
@@ -57,7 +77,6 @@ const Dashboard = () => {
   const { chatGPTResponse, isLoading: chatGPTLoading } =
     useChatGPTData(perplexityResponse);
 
-
   const {
     mistralResponse,
     isLoading: mistralLoading,
@@ -66,15 +85,16 @@ const Dashboard = () => {
 
   if (!token) return <LoadingSpinner />;
 
-  if (!spotifyData) return <NoTrackPlaying />;
+  // Only show NoTrackPlaying if no active data
+  if (!activeData) return <NoTrackPlaying />;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-black to-gray-900 text-white p-8">
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <ProgressBar
-            maxValue={spotifyData?.duration_ms}
-            currentValue={trackProgress}
+            maxValue={activeData?.duration_ms}
+            currentValue={trackProgress || 0}
           />
 
           <SpotifyControls token={token} isPlaying={isPlaying} />
@@ -82,9 +102,12 @@ const Dashboard = () => {
           <TrackAudioContent
             llmData={chatGPTResponse}
             isLoading={chatGPTLoading}
+            onAudioPlayingChange={handleAudioCommentaryChange}
+            token={token}
+            isSpotifyPlaying={isPlaying}
           />
 
-          <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
+          <TrackInfo spotifyData={activeData} song={song} artist={artist} />
 
           <TrackLLMInfo
             perplexityData={perplexityResponse}

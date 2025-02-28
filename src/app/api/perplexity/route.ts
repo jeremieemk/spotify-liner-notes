@@ -22,7 +22,6 @@ export async function POST(request: Request) {
   try {
     // Log the authentication header (without exposing the full API key)
     const authHeader = `Bearer ${apiKey}`;
-    // console.log("Auth header format:", authHeader.substring(0, 15) + "...");
 
     const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",

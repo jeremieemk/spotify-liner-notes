@@ -37,7 +37,6 @@ Please avoid writing the sections you don't have enough information about. Just 
       throw new Error('No response received from Mistral API');
     }
     const data = chatResponse.choices[0].message.content;
-    console.log("Mistral API response:", chatResponse);
     return NextResponse.json({ data });
   } catch (error) {
     console.error("Detailed Mistral API error:", error);

@@ -2,7 +2,13 @@ import React from "react";
 import { useElevenLabs } from "../../hooks/useElevenLabs";
 import AudioPlayer from "./AudioPlayer";
 
-const TrackAudioContent = ({ llmData, isLoading }) => {
+const TrackAudioContent = ({ 
+  llmData, 
+  isLoading, 
+  onAudioPlayingChange,
+  token,
+  isSpotifyPlaying 
+}) => {
   const {
     generateAudio,
     audioUrl,
@@ -15,6 +21,50 @@ const TrackAudioContent = ({ llmData, isLoading }) => {
       generateAudio(llmData);
     }
   }, [llmData, generateAudio]);
+
+  // Track the previous Spotify playing state when commentary starts
+  const [wasSpotifyPlaying, setWasSpotifyPlaying] = React.useState(false);
+  
+  // Update this state only when audio commentary starts playing
+  React.useEffect(() => {
+    if (!audioUrl) return;
+  }, [audioUrl]);
+
+  const handleAudioPlayingChange = async (isPlaying) => {
+    if (onAudioPlayingChange) {
+      onAudioPlayingChange(isPlaying);
+    }
+
+    // Only control Spotify if we have a token
+    if (!token) return;
+
+    try {
+      if (isPlaying) {
+        // Store current Spotify state before pausing
+        setWasSpotifyPlaying(isSpotifyPlaying);
+        
+        // Pause Spotify when audio commentary starts
+        await fetch("https://api.spotify.com/v1/me/player/pause", {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } else if (wasSpotifyPlaying) {
+        // Resume Spotify only if it was playing before commentary started
+        await fetch("https://api.spotify.com/v1/me/player/play", {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to control Spotify playback:", error);
+    }
+  };
 
   return (
     <div className="bg-white/5 rounded-lg p-6 my-6">
@@ -37,13 +87,14 @@ const TrackAudioContent = ({ llmData, isLoading }) => {
         audioUrl={audioUrl}
         isLoading={audioLoading}
         onRegenerate={handleGenerateAudio}
+        onPlayingChange={handleAudioPlayingChange}
       />
 
       {isLoading ? (
-        <p className="text-gray-400">Loading ll data...</p>
+        <p className="text-gray-400">Loading voice commentary...</p>
       ) : !llmData ? (
         <p className="text-gray-400">
-          No content available for audio generation
+          Waiting for content for audio generation
         </p>
       ) : null}
     </div>

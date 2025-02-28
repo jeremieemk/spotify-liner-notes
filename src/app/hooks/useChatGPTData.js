@@ -27,7 +27,6 @@ export function useChatGPTData(songData) {
         // Extract the content from the response
         const content = data?.data?.choices?.[0]?.message?.content || "";
 
-        console.log("ChatGPT response:", content);
         setChatGPTResponse(content);
       } catch (err) {
         console.error("Error fetching ChatGPT data:", err);
