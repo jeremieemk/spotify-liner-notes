@@ -1,5 +1,6 @@
-// app/api/chatgpt/route.ts
 import { NextResponse } from "next/server";
+
+export const maxDuration = 20; 
 
 export async function POST(request: Request) {
   const { songData } = await request.json();

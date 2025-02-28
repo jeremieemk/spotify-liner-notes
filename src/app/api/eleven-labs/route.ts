@@ -1,6 +1,8 @@
 import { ElevenLabsClient } from "elevenlabs";
 import { NextResponse } from "next/server";
 
+export const maxDuration = 20; 
+
 export async function POST(request: Request) {
   const { text } = await request.json();
 

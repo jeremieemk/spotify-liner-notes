@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { Mistral } from '@mistralai/mistralai';
 
+export const maxDuration = 20; 
+
 export async function POST(request: Request) {
   const { artist, song, album } = await request.json();
 

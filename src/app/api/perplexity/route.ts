@@ -1,6 +1,7 @@
-// app/api/perplexity/route.ts
 import { NextResponse } from "next/server";
 import { getPrompt } from "../getPrompt";
+
+export const maxDuration = 20; 
 
 export async function POST(request: Request) {
   const { artist, song, album, lyrics } = await request.json();
