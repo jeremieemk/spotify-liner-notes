@@ -26,13 +26,9 @@ import { getCleanTrackDetails, getMaxCredits } from "../utils/trackUtils";
 
 const Dashboard = () => {
   const [token, setToken] = useState("");
+  
   const [isAudioCommentaryPlaying, setIsAudioCommentaryPlaying] =
     useState(false);
-
-  useEffect(() => {
-    console.log("isAudioCommentaryPlaying", isAudioCommentaryPlaying);
-
-  }, [isAudioCommentaryPlaying]);
 
 
   useEffect(() => {
