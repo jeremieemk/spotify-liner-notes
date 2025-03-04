@@ -30,7 +30,7 @@ export function useMusicBrainzData({ artist, song, album }) {
         );
         let recordingSearchData = await recordingSearchResponse.json();
 
-        // 2) If we didn’t find anything, fall back to a simpler query
+        // 2) If we didn't find anything, fall back to a simpler query
         if (!recordingSearchData.recordings?.length) {
           searchQuery = encodeURIComponent(
             `recording:"${song}" AND artist:"${artist}"`
@@ -58,7 +58,7 @@ export function useMusicBrainzData({ artist, song, album }) {
             return !isLive && hasOfficialRelease;
           });
 
-          // Fallback to the first if no “best match”
+          // Fallback to the first if no "best match"
           if (!chosenRecording) {
             chosenRecording = recordingSearchData.recordings[0];
           }

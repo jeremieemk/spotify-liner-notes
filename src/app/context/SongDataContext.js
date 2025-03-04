@@ -11,17 +11,17 @@ import { useDiscogsData } from "../hooks/useDiscogsData";
 import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
 import { useLastFmApi } from "../hooks/useLastFmApi";
 
-const MusicDataContext = createContext();
+const SongDataContext = createContext();
 
-export const useMusicData = () => {
-  const context = useContext(MusicDataContext);
+export const useSongData = () => {
+  const context = useContext(SongDataContext);
   if (!context) {
-    throw new Error('useMusicData must be used within a MusicDataProvider');
+    throw new Error('useSongData must be used within a SongDataProvider');
   }
   return context;
 };
 
-export function MusicDataProvider({ children }) {
+export function SongDataProvider({ children }) {
   const { spotifyData, artist, song, album } = useSpotify();
   
   // Use the lyrics API hook
@@ -110,8 +110,8 @@ export function MusicDataProvider({ children }) {
   };
 
   return (
-    <MusicDataContext.Provider value={value}>
+    <SongDataContext.Provider value={value}>
       {children}
-    </MusicDataContext.Provider>
+    </SongDataContext.Provider>
   );
 }

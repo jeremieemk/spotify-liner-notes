@@ -15,7 +15,7 @@ import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 import { useAuth } from "../context/AuthContext";
 import { useSpotify } from "../context/SpotifyContext";
 import { usePlayback } from "../context/PlaybackContext";
-import { useMusicData } from "../context/MusicDataContext";
+import { useSongData } from "../context/SongDataContext";
 
 const Dashboard = () => {
   const { token, isLoading: authLoading } = useAuth();
@@ -43,7 +43,7 @@ const Dashboard = () => {
     mistralResponse,
     mistralLoading,
     mistralError
-  } = useMusicData();
+  } = useSongData();
 
   if (authLoading) return <LoadingSpinner />;
   

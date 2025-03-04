@@ -3,16 +3,16 @@
 import { AuthProvider } from "../context/AuthContext";
 import { SpotifyProvider } from "../context/SpotifyContext";
 import { PlaybackProvider } from "../context/PlaybackContext";
-import { MusicDataProvider } from "../context/MusicDataContext";
+import { SongDataProvider } from "../context/SongDataContext";
 
 export default function DashboardLayout({ children }) {
   return (
     <AuthProvider>
       <SpotifyProvider>
         <PlaybackProvider>
-          <MusicDataProvider>
+          <SongDataProvider>
             {children}
-          </MusicDataProvider>
+          </SongDataProvider>
         </PlaybackProvider>
       </SpotifyProvider>
     </AuthProvider>

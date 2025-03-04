@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useMemo } from "react";
 import { Discojs } from "discojs";
 
@@ -6,6 +8,7 @@ export function useDiscogsData(spotifyData) {
   const [mostWantedRelease, setMostWantedRelease] = useState(null);
   const [oldestRelease, setOldestRelease] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Memoize the cleaned track and artist names
   const { cleanTrackName, cleanArtistName } = useMemo(() => {
@@ -25,7 +28,7 @@ export function useDiscogsData(spotifyData) {
       cleanTrackName: trackName,
       cleanArtistName: artistName
     };
-  }, [spotifyData?.name, spotifyData?.artists[0]?.name]);
+  }, [spotifyData?.name, spotifyData?.artists]);
 
   useEffect(() => {
     const userToken = process.env.NEXT_PUBLIC_DISCOGS_KEY?.trim();
@@ -39,8 +42,12 @@ export function useDiscogsData(spotifyData) {
     setMostWantedRelease(null);
     setOldestRelease(null);
     setError(null);
+    setIsLoading(true);
 
-    if (!cleanTrackName || !cleanArtistName) return;
+    if (!cleanTrackName || !cleanArtistName) {
+      setIsLoading(false);
+      return;
+    }
 
     const discogsApi = new Discojs({ userToken });
     let isCanceled = false;
@@ -92,6 +99,10 @@ export function useDiscogsData(spotifyData) {
               : `API Error: ${fetchError.message}`
           );
         }
+      } finally {
+        if (!isCanceled) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -107,6 +118,7 @@ export function useDiscogsData(spotifyData) {
     mostWantedRelease,
     oldestRelease,
     error,
+    isLoading,
     comparison: discogsData
       ? {
           totalReleases: discogsData.length,
