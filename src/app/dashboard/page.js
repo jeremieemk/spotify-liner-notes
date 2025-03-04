@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ArtistBio from "./components/ArtistBio";
 import LoadingSpinner from "./components/LoadingSpinner";
 import NoTrackPlaying from "./components/NoTrackPlaying";
@@ -13,66 +12,36 @@ import TrackLLMInfo from "./components/TrackLLMInfo";
 import TrackLyrics from "./components/TrackLyrics";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 
-import { useChatGPTData } from "../hooks/useChatGPTData";
-import { useDiscogsData } from "../hooks/useDiscogsData";
-import { useLastFmData } from "../hooks/useLastFmData";
-import { useLyrics } from "../hooks/useLyrics";
-import { useMistralData } from "../hooks/useMistralData";
-import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
-import { usePerplexityData } from "../hooks/usePerplexityData";
-import { useSpotifyData } from "../hooks/useSpotifyData";
-
-import { getCleanTrackDetails, getMaxCredits } from "../utils/trackUtils";
+import { useSpotify } from "../context/SpotifyContext";
+import { usePlayback } from "../context/PlaybackContext";
+import { useMusicData } from "../context/MusicDataContext";
 
 const Dashboard = () => {
-  const [token, setToken] = useState("");
-  
-  const [isAudioCommentaryPlaying, setIsAudioCommentaryPlaying] =
-    useState(false);
+  const { token, spotifyData, artist, song } = useSpotify();
 
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("spotify_access_token");
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
-      window.location.href = "/";
-    }
-  }, []);
-
-  const { spotifyData, trackProgress, isPlaying } = useSpotifyData(token);
-
-  // Handle audio commentary state changes
-  const handleAudioCommentaryChange = (isPlaying) => {
-    setIsAudioCommentaryPlaying(isPlaying);
-  };
-
-  const { artist, song, album } = spotifyData
-    ? getCleanTrackDetails(spotifyData)
-    : { artist: "", song: "", album: "" };
-
-  const { lyrics, lyricsLoading, error: lyricsError } = useLyrics(artist, song);
-  const { mostWantedRelease, oldestRelease } = useDiscogsData(spotifyData);
-  const maxCreditsData = getMaxCredits(
-    { mostWantedRelease, oldestRelease },
-    song
-  );
-  const { artistBio } = useLastFmData({ artist, song });
-  const { musicBrainzData } = useMusicBrainzData({ artist, song, album });
   const {
+    trackProgress,
+    isPlaying,
+    isAudioCommentaryPlaying,
+    handleAudioCommentaryChange,
+  } = usePlayback();
+
+  const {
+    lyrics,
+    lyricsLoading,
+    lyricsError,
+    discogsCredits,
+    artistBio,
+    musicBrainzData,
     perplexityResponse,
-    isLoading: perplexityLoading,
-    error: perplexityError,
-  } = usePerplexityData(artist, song, album, lyrics, lyricsLoading);
-
-  const { chatGPTResponse, isLoading: chatGPTLoading } =
-    useChatGPTData(perplexityResponse);
-
-  const {
+    perplexityLoading,
+    perplexityError,
+    chatGPTResponse,
+    chatGPTLoading,
     mistralResponse,
-    isLoading: mistralLoading,
-    error: mistralError,
-  } = useMistralData(artist, song, album);
+    mistralLoading,
+    mistralError
+  } = useMusicData();
 
   if (!token) return <LoadingSpinner />;
 
@@ -114,7 +83,7 @@ const Dashboard = () => {
           />
 
           <TrackDiscogsCredits
-            releaseData={maxCreditsData.release}
+            releaseData={discogsCredits.release}
             songName={song}
           />
 
