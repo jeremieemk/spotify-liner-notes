@@ -12,12 +12,14 @@ import TrackLLMInfo from "./components/TrackLLMInfo";
 import TrackLyrics from "./components/TrackLyrics";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 
+import { useAuth } from "../context/AuthContext";
 import { useSpotify } from "../context/SpotifyContext";
 import { usePlayback } from "../context/PlaybackContext";
 import { useMusicData } from "../context/MusicDataContext";
 
 const Dashboard = () => {
-  const { token, spotifyData, artist, song } = useSpotify();
+  const { token, isLoading: authLoading } = useAuth();
+  const { spotifyData, artist, song } = useSpotify();
 
   const {
     trackProgress,
@@ -43,9 +45,10 @@ const Dashboard = () => {
     mistralError
   } = useMusicData();
 
+  if (authLoading) return <LoadingSpinner />;
+  
   if (!token) return <LoadingSpinner />;
 
-  // Only show NoTrackPlaying if no active data
   if (!spotifyData) return <NoTrackPlaying />;
 
   return (

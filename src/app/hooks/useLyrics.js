@@ -48,9 +48,5 @@ export function useLyrics(artist, song) {
     fetchLyrics();
   }, [artist, song]);
 
-  useEffect(() => {
-    console.log('Current lyrics state:', { lyrics, lyricsLoading });
-  }, [lyrics, lyricsLoading]);
-
   return { lyrics, lyricsLoading, error };
 }

@@ -1,37 +1,34 @@
-import { redirect } from 'next/navigation';
+"use client";
 
-async function initiateSpotifyAuth() {
-  'use server'
-  
-  const client_id = process.env.SPOTIFY_CLIENT_ID;
-  const redirect_uri = process.env.NODE_ENV === "production" 
-    ? "https://spotify-liner-notes.vercel.app/callback"
-    : "http://localhost:3000/callback";
-    
-  const scope = [
-    "user-read-playback-state", "user-modify-playback-state"
-  ].join(" ");
-
-  const params = new URLSearchParams({
-    client_id: client_id!,
-    response_type: 'token',
-    redirect_uri,
-    scope,
-    show_dialog: 'true'
-  });
-
-  redirect(`https://accounts.spotify.com/authorize?${params.toString()}`);
-}
+import { useState } from 'react';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSpotifyLogin = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/spotify');
+      const data = await response.json();
+      
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
+      }
+    } catch (error) {
+      console.error('Failed to initiate Spotify auth:', error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <form action={initiateSpotifyAuth}>
-        <button type="submit" 
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-          Log in to Spotify!
-        </button>
-      </form>
+      <button 
+        onClick={handleSpotifyLogin}
+        disabled={isLoading}
+        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:bg-green-300"
+      >
+        {isLoading ? 'Loading...' : 'Log in to Spotify!'}
+      </button>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext } from "react";
+import { useAuth } from "./AuthContext";
 import { useSpotifyData } from "../hooks/useSpotifyData";
 import { getCleanTrackDetails } from "../utils/trackUtils";
 
@@ -15,19 +16,7 @@ export const useSpotify = () => {
 };
 
 export function SpotifyProvider({ children }) {
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("spotify_access_token");
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
-      // If we're in a client-side environment, redirect
-      if (typeof window !== 'undefined') {
-        window.location.href = "/";
-      }
-    }
-  }, []);
+  const { token } = useAuth();
 
   const { spotifyData, trackProgress, isPlaying } = useSpotifyData(token);
 
@@ -37,11 +26,9 @@ export function SpotifyProvider({ children }) {
     : { artist: "", song: "", album: "" };
 
   const value = {
-    token,
-    setToken,
     spotifyData,
-    trackProgress, // Still expose these so PlaybackContext can use them
-    isPlaying,     // Still expose these so PlaybackContext can use them
+    trackProgress,
+    isPlaying,
     artist,
     song,
     album
