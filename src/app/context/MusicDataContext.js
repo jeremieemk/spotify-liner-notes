@@ -3,13 +3,13 @@
 import { createContext, useContext } from "react";
 import { useSpotify } from "./SpotifyContext";
 import { useChatGPTData } from "../hooks/useChatGPTData";
-import { useDiscogsData } from "../hooks/useDiscogsData";
-import { useLastFmData } from "../hooks/useLastFmData";
-import { useLyrics } from "../hooks/useLyrics";
 import { useMistralData } from "../hooks/useMistralData";
-import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
 import { usePerplexityData } from "../hooks/usePerplexityData";
 import { getMaxCredits } from "../utils/trackUtils";
+import { useLyricsApi } from "../hooks/useLyricsApi";
+import { useDiscogsApi } from "../hooks/useDiscogsApi";
+import { useMusicBrainzApi } from "../hooks/useMusicBrainzApi";
+import { useLastFmApi } from "../hooks/useLastFmApi";
 
 const MusicDataContext = createContext();
 
@@ -24,37 +24,35 @@ export const useMusicData = () => {
 export function MusicDataProvider({ children }) {
   const { spotifyData, artist, song, album } = useSpotify();
   
-  // fetch lyrics
-  const { lyrics, lyricsLoading, error: lyricsError } = useLyrics(artist, song);
+  // Use the individual API-based hooks
+  const { lyrics, isLoading: lyricsLoading, error: lyricsError } = 
+    useLyricsApi(artist, song);
   
-  // fetch Discogs data
   const { 
     mostWantedRelease, 
     oldestRelease, 
     isLoading: discogsLoading, 
     error: discogsError 
-  } = useDiscogsData(spotifyData);
+  } = useDiscogsApi(spotifyData);
   
   const maxCreditsData = getMaxCredits(
     { mostWantedRelease, oldestRelease },
     song
   );
   
-  // fetch LastFM data
   const { 
     artistBio, 
     isLoading: lastFmLoading, 
     error: lastFmError 
-  } = useLastFmData({ artist, song });
+  } = useLastFmApi(artist);
   
-  // fetch MusicBrainz data
   const { 
     musicBrainzData, 
     isLoading: musicBrainzLoading, 
     error: musicBrainzError 
-  } = useMusicBrainzData({ artist, song, album });
+  } = useMusicBrainzApi(artist, song, album);
   
-  // Fetch LLM data
+  // Keep existing LLM hooks
   const {
     perplexityResponse,
     isLoading: perplexityLoading,
