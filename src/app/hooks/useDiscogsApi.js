@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from "react";
 
-export function useDiscogsApi(artist, album, title) {
+export function useDiscogsApi(spotifyData) {
   const [discogsData, setDiscogsData] = useState({ mostWantedRelease: null, oldestRelease: null });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchDiscogsData() {
+      if (!spotifyData) return;
+      
+      const artist = spotifyData?.artists?.[0]?.name;
+      const album = spotifyData?.album?.name;
+      const title = spotifyData?.name;
+
       if (!artist || (!album && !title)) return;
       
       setIsLoading(true);
@@ -40,7 +46,7 @@ export function useDiscogsApi(artist, album, title) {
     }
     
     fetchDiscogsData();
-  }, [artist, album, title]);
+  }, [spotifyData]);
   
   return { ...discogsData, isLoading, error };
 }
