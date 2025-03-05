@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { Discojs } from "discojs";
 
 export function useDiscogsData(spotifyData) {
   const [discogsData, setDiscogsData] = useState(null);
@@ -31,12 +30,6 @@ export function useDiscogsData(spotifyData) {
   }, [spotifyData?.name, spotifyData?.artists]);
 
   useEffect(() => {
-    const userToken = process.env.NEXT_PUBLIC_DISCOGS_KEY?.trim();
-    if (!userToken) {
-      setError("Invalid Discogs API token");
-      return;
-    }
-
     // Reset states when track/artist changes
     setDiscogsData(null);
     setMostWantedRelease(null);
@@ -49,55 +42,31 @@ export function useDiscogsData(spotifyData) {
       return;
     }
 
-    const discogsApi = new Discojs({ userToken });
     let isCanceled = false;
 
     async function fetchDiscogsData() {
       try {
-        const searchResults = await discogsApi.searchDatabase({
-          artist: cleanArtistName,
+        const queryParams = new URLSearchParams({
           track: cleanTrackName,
-          type: "release",
+          artist: cleanArtistName
         });
+        
+        const response = await fetch(`/api/discogs?${queryParams}`);
+        const data = await response.json();
 
         if (isCanceled) return;
 
-        if (searchResults.results.length > 0) {
-          setDiscogsData(searchResults.results);
-
-          // Sort by community want count
-          const sortedByWants = [...searchResults.results].sort(
-            (a, b) => (b.community?.want || 0) - (a.community?.want || 0)
-          );
-
-          // Sort by year (oldest first)
-          const sortedByYear = [...searchResults.results]
-            .filter((release) => release.year)
-            .sort((a, b) => parseInt(a.year) - parseInt(b.year));
-
-          // Fetch details in parallel
-          if (sortedByWants[0] && sortedByYear[0]) {
-            const [wantedDetails, oldestDetails] = await Promise.all([
-              discogsApi.getRelease(sortedByWants[0].id),
-              discogsApi.getRelease(sortedByYear[0].id)
-            ]);
-
-            if (!isCanceled) {
-              setMostWantedRelease(wantedDetails);
-              setOldestRelease(oldestDetails);
-            }
-          }
+        if (response.ok) {
+          setDiscogsData(data.discogsData);
+          setMostWantedRelease(data.mostWantedRelease);
+          setOldestRelease(data.oldestRelease);
         } else {
-          setError("No matching releases found");
+          setError(data.error || "Failed to fetch data from Discogs");
         }
       } catch (fetchError) {
         if (!isCanceled) {
-          console.error("Discogs API Error:", fetchError);
-          setError(
-            fetchError.message.includes("authentication")
-              ? "Authentication failed. Check your Discogs API token."
-              : `API Error: ${fetchError.message}`
-          );
+          console.error("API Request Error:", fetchError);
+          setError(`Request Error: ${fetchError.message}`);
         }
       } finally {
         if (!isCanceled) {
@@ -111,7 +80,7 @@ export function useDiscogsData(spotifyData) {
     return () => {
       isCanceled = true;
     };
-  }, [cleanTrackName, cleanArtistName]); // Only depends on cleaned names
+  }, [cleanTrackName, cleanArtistName]);
 
   return {
     discogsData,
