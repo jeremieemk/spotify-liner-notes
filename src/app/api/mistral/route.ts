@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { Mistral } from '@mistralai/mistralai';
+import { Mistral } from "@mistralai/mistralai";
 
-export const maxDuration = 20; 
+export const maxDuration = 20;
 
 export async function POST(request: Request) {
   const { artist, song, album } = await request.json();
@@ -19,22 +19,20 @@ export async function POST(request: Request) {
 
   const prompt = `Tell me about the song "${song}" by ${artist} on the album ${album}. Include details about:
 - Release year and label
-- Known credits (musicians, studios, engineers)
 - Notable aspects of the recording
-- Critical reception and reviews
 - Background about the artist/band
-- Song meaning and lyrics analysis
+- Known credits (musicians, studios, engineers)
 Please provide detailed information in a structured manner with section titles and md formatting.
 Please avoid writing the sections you don't have enough information about. Just skip those`;
 
   try {
     const chatResponse = await client.chat.complete({
-      model: 'mistral-large-latest',
-      messages: [{ role: 'user', content: prompt }],
+      model: "mistral-large-latest",
+      messages: [{ role: "user", content: prompt }],
     });
 
     if (!chatResponse?.choices?.[0]) {
-      throw new Error('No response received from Mistral API');
+      throw new Error("No response received from Mistral API");
     }
     const data = chatResponse.choices[0].message.content;
     return NextResponse.json({ data });
