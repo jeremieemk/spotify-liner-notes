@@ -42,11 +42,11 @@ const Dashboard = () => {
     chatGPTLoading,
     mistralResponse,
     mistralLoading,
-    mistralError
+    mistralError,
   } = useSongData();
 
   if (authLoading) return <LoadingSpinner />;
-  
+
   if (!token) return <LoadingSpinner />;
 
   if (!spotifyData) return <NoTrackPlaying />;
@@ -96,11 +96,13 @@ const Dashboard = () => {
 
           {artistBio && <ArtistBio bio={artistBio} />}
 
-          <TrackLyrics
-            lyrics={lyrics}
-            isLoading={lyricsLoading}
-            error={lyricsError}
-          />
+          {lyrics && (
+            <TrackLyrics
+              lyrics={lyrics}
+              isLoading={lyricsLoading}
+              error={lyricsError}
+            />
+          )}
         </div>
       </div>
     </div>

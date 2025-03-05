@@ -8,7 +8,7 @@ export default function Home() {
   const handleSpotifyLogin = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/spotify');
+      const response = await fetch('/api/auth');
       const data = await response.json();
       
       if (data.authUrl) {
