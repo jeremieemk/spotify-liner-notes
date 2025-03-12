@@ -6,9 +6,9 @@ export function usePerplexityData(
   album,
   lyrics,
   lyricsLoading,
-  credits,
+  discogsCredits,
   discogsLoading,
-  musicbrainzData,
+  musicbrainzCredits,
   musicbrainzLoading
 ) {
   const [perplexityResponse, setPerplexityResponse] = useState(null);
@@ -43,8 +43,8 @@ export function usePerplexityData(
 
       try {
         // Process the credits object to ensure it's JSON-serializable
-        const processedCredits = credits ? JSON.parse(JSON.stringify(credits)) : null;
-        const processedMusicbrainzData = musicbrainzData ? JSON.parse(JSON.stringify(musicbrainzData)) : null;
+        const processedDiscogsCredits = discogsCredits ? JSON.parse(JSON.stringify(discogsCredits)) : null;
+        const processedMusicbrainzCredits = musicbrainzCredits ? JSON.parse(JSON.stringify(musicbrainzCredits)) : null;
         
         const response = await fetch("/api/perplexity", {
           method: "POST",
@@ -54,8 +54,8 @@ export function usePerplexityData(
             song, 
             album, 
             lyrics, 
-            credits: processedCredits,
-            musicbrainzData: processedMusicbrainzData
+            discogsCredits: processedDiscogsCredits,
+            musicbrainzCredits: processedMusicbrainzCredits
           }),
         });
 
