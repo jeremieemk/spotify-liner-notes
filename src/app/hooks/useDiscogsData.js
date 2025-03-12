@@ -88,26 +88,5 @@ export function useDiscogsData(spotifyData) {
     oldestRelease,
     error,
     isLoading,
-    comparison: discogsData
-      ? {
-          totalReleases: discogsData.length,
-          mostWantedStats: mostWantedRelease
-            ? {
-                year: mostWantedRelease.year,
-                country: mostWantedRelease.country,
-                format: mostWantedRelease.format,
-                want_count: mostWantedRelease.community?.want,
-              }
-            : null,
-          oldestStats: oldestRelease
-            ? {
-                year: oldestRelease.year,
-                country: oldestRelease.country,
-                format: oldestRelease.format,
-                want_count: oldestRelease.community?.want,
-              }
-            : null,
-        }
-      : null,
   };
 }

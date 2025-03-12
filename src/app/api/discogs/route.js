@@ -50,25 +50,6 @@ export async function GET(request) {
         discogsData: searchResults.results,
         mostWantedRelease,
         oldestRelease,
-        comparison: {
-          totalReleases: searchResults.results.length,
-          mostWantedStats: mostWantedRelease
-            ? {
-                year: mostWantedRelease.year,
-                country: mostWantedRelease.country,
-                format: mostWantedRelease.format,
-                want_count: mostWantedRelease.community?.want,
-              }
-            : null,
-          oldestStats: oldestRelease
-            ? {
-                year: oldestRelease.year,
-                country: oldestRelease.country,
-                format: oldestRelease.format,
-                want_count: oldestRelease.community?.want,
-              }
-            : null,
-        }
       });
     } else {
       return NextResponse.json({ error: "No matching releases found" }, { status: 404 });
