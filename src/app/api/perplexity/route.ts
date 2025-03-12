@@ -8,6 +8,7 @@ interface RequestBody {
   album?: string | null;
   lyrics?: string | null;
   credits?: DiscogsCredits | null;
+  musicbrainzData?: MusicBrainzData | null;
 }
 
 // Define types for the credits object
@@ -25,6 +26,14 @@ interface CreditItem {
   tracks?: string;
   id?: number;
   resource_url?: string;
+}
+
+interface MusicBrainzData {
+  recording?: any;
+  release?: any;
+  artist?: any;
+  relationships?: any;
+  [key: string]: any; // For fallback handling of other structures
 }
 
 // Define types for the Perplexity API response
@@ -49,7 +58,7 @@ interface PerplexityResponse {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: RequestBody = await request.json();
-    const { artist, song, album, lyrics, credits } = body;
+    const { artist, song, album, lyrics, credits, musicbrainzData } = body;
 
     // Validate required fields
     if (!artist || !song) {
@@ -64,7 +73,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       song,
       album || undefined,
       lyrics,
-      formatCredits(credits)
+      formatCredits(credits),
+      formatMusicBrainzData(musicbrainzData)
     );
 
     // Call the Perplexity API
@@ -193,6 +203,67 @@ function formatCredits(credits: DiscogsCredits | null | undefined): string {
         });
       }
     });
+  }
+
+  return result;
+}
+
+// Helper function to format the MusicBrainz data into readable text
+function formatMusicBrainzData(data: MusicBrainzData | null | undefined): string {
+  if (!data || Object.keys(data).length === 0) {
+    return "No MusicBrainz information available";
+  }
+
+  let result = "MusicBrainz information:\n";
+
+  // Format recording information
+  if (data.recording) {
+    result += "\nRecording Information:\n";
+    result += `Title: ${data.recording.title || "Unknown"}\n`;
+    result += `First release date: ${data.recording["first-release-date"] || "Unknown"}\n`;
+    
+    // Add artist credits if available
+    if (data.recording["artist-credit"] && data.recording["artist-credit"].length > 0) {
+      result += "Artist Credits:\n";
+      data.recording["artist-credit"].forEach((credit: any) => {
+        result += `- ${credit.name || "Unknown"}\n`;
+      });
+    }
+  }
+
+  // Format release information
+  if (data.release) {
+    result += "\nRelease Information:\n";
+    result += `Title: ${data.release.title || "Unknown"}\n`;
+    result += `Date: ${data.release.date || "Unknown"}\n`;
+    result += `Country: ${data.release.country || "Unknown"}\n`;
+    
+    // Add label information if available
+    if (data.release["label-info"] && data.release["label-info"].length > 0) {
+      result += "Labels:\n";
+      data.release["label-info"].forEach((label: any) => {
+        if (label.label) {
+          result += `- ${label.label.name || "Unknown"}\n`;
+        }
+      });
+    }
+  }
+
+  // Format relationships
+  if (data.relationships) {
+    result += "\nRelationships:\n";
+    // Process relationships based on your MusicBrainz data structure
+    // This will depend on what relationships you're getting from the API
+    for (const type in data.relationships) {
+      result += `${type}:\n`;
+      data.relationships[type].forEach((rel: any) => {
+        if (rel.artist) {
+          result += `- ${rel.artist.name} (${rel.type || "Unknown"})\n`;
+        } else if (rel.target) {
+          result += `- ${rel.target.name || rel.target.title || "Unknown"} (${rel.type || "Unknown"})\n`;
+        }
+      });
+    }
   }
 
   return result;

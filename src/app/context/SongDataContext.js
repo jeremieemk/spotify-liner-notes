@@ -32,7 +32,7 @@ export function SongDataProvider({ children }) {
     error: lyricsError,
   } = useLyricsApi(artist, song);
 
-  // Use the original Discogs hook
+  // Use the Discogs hook
   const {
     mostWantedRelease,
     oldestRelease,

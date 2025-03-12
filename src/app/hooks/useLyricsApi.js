@@ -13,6 +13,7 @@ export function useLyricsApi(artist, title) {
       
       setIsLoading(true);
       setError(null);
+      setLyrics(null);
       
       try {
         const response = await fetch(`/api/lyrics?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`);

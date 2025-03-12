@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function usePerplexityData(
   artist,
@@ -7,25 +7,44 @@ export function usePerplexityData(
   lyrics,
   lyricsLoading,
   credits,
-  discogsLoading
+  discogsLoading,
+  musicbrainzData,
+  musicbrainzLoading
 ) {
   const [perplexityResponse, setPerplexityResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const requestedRef = useRef(false);
+  const songArtistRef = useRef("");
+
+  // Reset when song/artist changes
+  useEffect(() => {
+    if (artist && song) {
+      const currentKey = `${artist}-${song}`;
+      if (songArtistRef.current !== currentKey) {
+        songArtistRef.current = currentKey;
+        requestedRef.current = false;
+        setPerplexityResponse(null);
+      }
+    }
+  }, [artist, song]);
 
   useEffect(() => {
     async function fetchData() {
-      console.log('discogsLoading', discogsLoading);
-
-      if (!artist || !song || lyricsLoading || discogsLoading) return;
-
+      // Exit if we don't have the required data or if we're still loading
+      if (!artist || !song || lyricsLoading || discogsLoading || musicbrainzLoading) return;
+      
+      // Prevent duplicate requests for the same song
+      if (requestedRef.current) return;
+      
+      requestedRef.current = true;
       setIsLoading(true);
       setError(null);
 
       try {
         // Process the credits object to ensure it's JSON-serializable
         const processedCredits = credits ? JSON.parse(JSON.stringify(credits)) : null;
-        console.log('processedCredits', processedCredits);
+        const processedMusicbrainzData = musicbrainzData ? JSON.parse(JSON.stringify(musicbrainzData)) : null;
         
         const response = await fetch("/api/perplexity", {
           method: "POST",
@@ -35,7 +54,8 @@ export function usePerplexityData(
             song, 
             album, 
             lyrics, 
-            credits: processedCredits 
+            credits: processedCredits,
+            musicbrainzData: processedMusicbrainzData
           }),
         });
 
@@ -48,13 +68,15 @@ export function usePerplexityData(
       } catch (err) {
         console.error("Error with Perplexity request:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
+        // Reset so we can try again
+        requestedRef.current = false;
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchData();
-  }, [lyrics, lyricsLoading, discogsLoading]);
+  }, [artist, song, album, lyricsLoading, discogsLoading, musicbrainzLoading]);
 
   return { perplexityResponse, isLoading, error };
 }

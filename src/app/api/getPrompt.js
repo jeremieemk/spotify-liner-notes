@@ -1,4 +1,11 @@
-export const getPrompt = (artist, song, album, lyrics, credits) => {
+export const getPrompt = (
+  artist,
+  song,
+  album,
+  lyrics,
+  credits,
+  musicbrainzData
+) => {
   let prompt = `Tell me about the song "${song}" by ${artist} on the album ${album}. Write the following sections:
   (please not that the album name might be the same as the song name, if it is a single. If you wan't find any reference to the song or artist, just skip the following sections)
   - Release year and label
@@ -7,10 +14,11 @@ export const getPrompt = (artist, song, album, lyrics, credits) => {
   - Known credits (include musicians, studios, engineers, songwriters, producers, etc.)
   `;
 
-  // Only include lyrics analysis if lyrics exist.
   if (credits !== null) {
-    prompt += `I fetched data from Discogs, here's what i found: ${credits}
-  Integrate Discogs data in your answer.`;
+    prompt += `I fetched data from Discogs and MusicBrainz, here's what i found: ${
+      (credits, musicbrainzData)
+    }
+  Integrate this data in your answer.`;
   }
 
   // Only include lyrics analysis if lyrics exist.

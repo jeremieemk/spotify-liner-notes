@@ -60,7 +60,17 @@ export function MusicDataProvider({ children }) {
     perplexityResponse,
     isLoading: perplexityLoading,
     error: perplexityError,
-  } = usePerplexityData(artist, song, album, lyrics, lyricsLoading);
+  } = usePerplexityData(
+    artist, 
+    song, 
+    album, 
+    lyrics, 
+    lyricsLoading, 
+    maxCreditsData.credits, 
+    discogsLoading,
+    musicBrainzData,
+    musicBrainzLoading
+  );
 
   const { 
     chatGPTResponse, 
