@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-export const useElevenLabs = () => {
+export const useElevenLabs = (text) => {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const prevTextRef = useRef(null);
 
-  const generateAudio = async (text) => {
+  const generateAudio = useCallback(async (text) => {
     if (audioUrl) {
       URL.revokeObjectURL(audioUrl); // Clean up previous URL
       setAudioUrl(null);
@@ -13,6 +14,7 @@ export const useElevenLabs = () => {
 
     setIsLoading(true);
     setError(null);
+    prevTextRef.current = text; // Update the reference to current text
 
     try {
       const response = await fetch("/api/eleven-labs", {
@@ -36,7 +38,13 @@ export const useElevenLabs = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [audioUrl]);
+
+  useEffect(() => {
+    if (text && text !== prevTextRef.current) {
+      generateAudio(text);
+    }
+  }, [text, generateAudio]);
 
   // Clean up on unmount
   useEffect(() => {
@@ -47,5 +55,5 @@ export const useElevenLabs = () => {
     };
   }, [audioUrl]);
 
-  return { generateAudio, audioUrl, isLoading, error };
+  return { audioUrl, isLoading, error };
 };

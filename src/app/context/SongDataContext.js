@@ -1,6 +1,5 @@
 "use client";
 
-
 import { createContext, useContext } from "react";
 import { useChatGPTData } from "../hooks/useChatGPTData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
@@ -11,6 +10,7 @@ import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
 import { usePerplexityData } from "../hooks/usePerplexityData";
 import { getMaxCredits } from "../utils/trackUtils";
 import { useSpotify } from "./SpotifyContext";
+import { useElevenLabs } from "../hooks/useElevenLabs";
 
 const SongDataContext = createContext();
 
@@ -25,14 +25,14 @@ export const useSongData = () => {
 export function SongDataProvider({ children }) {
   const { spotifyData, artist, song, album } = useSpotify();
 
-  // Use the lyrics API hook
+  // get lyrics from the Musixmatch API
   const {
     lyrics,
     isLoading: lyricsLoading,
     error: lyricsError,
   } = useLyricsApi(artist, song);
 
-  // Use the Discogs hook
+  // get discogs data
   const {
     mostWantedRelease,
     oldestRelease,
@@ -45,21 +45,21 @@ export function SongDataProvider({ children }) {
     song
   );
 
-  // Use the LastFM API hook
+  // get artist bio from LastFM API
   const {
     artistBio,
     isLoading: lastFmLoading,
     error: lastFmError,
   } = useLastFmApi(artist);
 
-  // Use the original MusicBrainz hook
+  // get musicBrainz data
   const {
     musicBrainzData,
     loading: musicBrainzLoading,
     error: musicBrainzError,
   } = useMusicBrainzData({ artist, song, album });
 
-  // Keep existing LLM hooks
+  // generate perplexity comment
   const {
     perplexityResponse,
     isLoading: perplexityLoading,
@@ -74,12 +74,22 @@ export function SongDataProvider({ children }) {
     discogsLoading
   );
 
+  // create audio commentary script using ChatGPT
   const {
     chatGPTResponse,
     isLoading: chatGPTLoading,
     error: chatGPTError,
   } = useChatGPTData(perplexityResponse);
 
+
+  // audio commentary generation using ElevenLabs API
+  const {
+    audioUrl,
+    isLoading: eleveLabsIsLoading,
+    error: elevenLabsError,
+  } = useElevenLabs(chatGPTResponse);
+
+  // generate mistral alternative comment
   const {
     mistralResponse,
     isLoading: mistralLoading,
@@ -115,6 +125,11 @@ export function SongDataProvider({ children }) {
     chatGPTResponse,
     chatGPTLoading,
     chatGPTError,
+
+    // audio commentary data
+    audioUrl,
+    eleveLabsIsLoading,
+    elevenLabsError,
 
     mistralResponse,
     mistralLoading,
