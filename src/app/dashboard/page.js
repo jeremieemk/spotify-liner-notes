@@ -9,12 +9,14 @@ import TrackAudioContent from "./components/TrackAudioContent";
 import TrackDiscogsCredits from "./components/TrackDiscogsCredits";
 import TrackInfo from "./components/TrackInfos";
 import TrackLLMInfo from "./components/TrackLLMInfo";
+import CommentarySettings from "./components/CommentarySettings";
 import TrackLyrics from "./components/TrackLyrics";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 
 import { useAuth } from "../context/AuthContext";
 import { usePlayback } from "../context/PlaybackContext";
 import { useSongData } from "../context/SongDataContext";
+import { Comme } from "next/font/google";
 
 const Dashboard = () => {
   const { token, isLoading: authLoading } = useAuth();
@@ -55,38 +57,15 @@ const Dashboard = () => {
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <ProgressBar />
-
+          <CommentarySettings/>
           <SpotifyControls />
-
           <TrackInfo />
-
-          <TrackLLMInfo
-
-          />
-
-          {/* <TrackAudioContent
-            llmData={chatGPTResponse}
-            isLoading={chatGPTLoading}
-            onAudioPlayingChange={handleAudioCommentaryChange}
-            token={token}
-            isSpotifyPlaying={isPlaying}
-          />
-
-         
-
-
-
-          <TrackDiscogsCredits
-            releaseData={discogsCredits.release}
-            songName={song}
-          />
-
-          {musicBrainzData?.recording && (
+          <TrackLLMInfo />
+          <TrackDiscogsCredits />
+          {/* {musicBrainzData?.recording && (
             <TrackMusicBrainzCredits data={musicBrainzData.recording} />
           )}
-
           {artistBio && <ArtistBio bio={artistBio} />}
-
           {lyrics && (
             <TrackLyrics
               lyrics={lyrics}

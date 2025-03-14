@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { usePlayback } from "../context/PlaybackContext";
+import { usePlayback } from "../../context/PlaybackContext";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 

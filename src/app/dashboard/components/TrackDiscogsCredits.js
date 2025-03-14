@@ -1,19 +1,26 @@
-const TrackDiscogsCredits = ({ releaseData, songName }) => (
-  <div className="bg-white/5 rounded-lg p-6 mt-6">
-    <h2 className="text-2xl font-bold mb-4">Discogs Details</h2>
-    {renderTrackCredits(releaseData, songName) || (
-      <p className="text-gray-400">No credits found</p>
-    )}
-  </div>
-);
+import { useSongData } from "../../context/SongDataContext";
+
+const TrackDiscogsCredits = () => {
+  const { discogsCredits, song } = useSongData();
+  const releaseData = discogsCredits?.release;
+
+  return (
+    <div className="bg-white/5 rounded-lg p-6 mt-6">
+      <h2 className="text-2xl font-bold mb-4">Discogs Details</h2>
+      {renderTrackCredits(releaseData, song) || (
+        <p className="text-gray-400">No credits found</p>
+      )}
+    </div>
+  );
+};
 
 export default TrackDiscogsCredits;
 
-const renderTrackCredits = (releaseData, songName) => {
+const renderTrackCredits = (releaseData, song) => {
   if (!releaseData) return null;
 
   const tracklistItem = releaseData.tracklist.find(
-    (track) => track.title.toLowerCase() === songName.toLowerCase()
+    (track) => track.title.toLowerCase() === song.toLowerCase()
   );
 
   const trackCredits = tracklistItem?.extraartists;
