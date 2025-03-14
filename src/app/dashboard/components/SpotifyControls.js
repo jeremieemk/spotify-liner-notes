@@ -1,25 +1,20 @@
-import React, { useEffect } from "react";
-import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { usePlayback } from "../../context/PlaybackContext";
 
-const SpotifyControls = ({
-  token,
-  isPlaying = false,
-  isAudioCommentaryPlaying,
-}) => {
-  const controls = useSpotifyControls(token);
 
-  useEffect(() => {
-    if (isAudioCommentaryPlaying && isPlaying) {
-      controls.pause();
-    } else if (!isAudioCommentaryPlaying && !isPlaying) {
-      controls.play();
-    }
-  }, [controls, isAudioCommentaryPlaying, isPlaying]);
+const SpotifyControls = ({}) => {
+  const {
+    isPlaying,
+    playSpotify,
+    pauseSpotify,
+    playNextSpotifyTrack,
+    playPreviousSpotifyTrack,
+  } = usePlayback();
 
   return (
     <div className="flex items-center justify-center gap-4 mt-4 mb-6">
       <button
-        onClick={controls.previous}
+        onClick={playPreviousSpotifyTrack}
         className="p-2 hover:bg-gray-800 rounded-full transition-colors"
         aria-label="Previous track"
       >
@@ -27,7 +22,7 @@ const SpotifyControls = ({
       </button>
 
       <button
-        onClick={isPlaying ? controls.pause : controls.play}
+        onClick={isPlaying ? pauseSpotify : playSpotify}
         className="p-3 hover:bg-gray-800 rounded-full transition-colors"
         aria-label={isPlaying ? "Pause" : "Play"}
       >
@@ -39,7 +34,7 @@ const SpotifyControls = ({
       </button>
 
       <button
-        onClick={controls.next}
+        onClick={playNextSpotifyTrack}
         className="p-2 hover:bg-gray-800 rounded-full transition-colors"
         aria-label="Next track"
       >

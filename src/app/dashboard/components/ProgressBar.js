@@ -1,79 +1,52 @@
 import classNames from "classnames";
+import { useSongData } from "../../context/SongDataContext";
+import { usePlayback } from "../../context/PlaybackContext";
 
-const ProgressBar = ({
-  minValue = 0,
-  maxValue = 100,
-  rounded = "none",
-  color = "yellow",
-  currentValue = 0,
-  showPercentage = true,
-  disabled,
-  className,
-}) => {
-  const clampedValue = Math.min(maxValue, Math.max(currentValue, minValue));
-  const widthPercentage =
-    ((clampedValue - minValue) / (maxValue - minValue)) * 100;
+const ProgressBar = ({ className }) => {
+  const { spotifyData } = useSongData();
+  const { trackProgress } = usePlayback();
+
+  const duration = spotifyData?.duration_ms || 100;
+  const progress = trackProgress || 0;
+  
+  // Calculate percentage of track played
+  const widthPercentage = Math.min(100, Math.max(0, (progress / duration) * 100));
+  
+  // Format time for display
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   return (
-    <div
-      className={classNames(
-        "w-full md:w-full border-black border-2 focus:outline-none h-9 overflow-hidden shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-white mb-6",
-        { "rounded-none": rounded === "none" },
-        { "rounded-md": rounded === "md" },
-        { "rounded-full": rounded === "full" },
-        { "shadow-[2px_2px_0px_rgba(0,0,0,1)]": !disabled },
-        {
-          "border-[#727272] bg-[#D4D4D4] text-[#676767] hover:bg-[#D4D4D4] hover:shadow-none active:bg-[#D4D4D4]":
-            disabled,
-        },
-        className
-      )}
-    >
+    <div className="mb-2">
       <div
-        style={{ width: widthPercentage + "%" }}
         className={classNames(
-          "h-full flex flex-row items-center justify-end overflow-hidden",
-          {
-            "bg-violet-200 hover:bg-violet-300":
-              color === "violet" && !disabled,
-          },
-          {
-            "bg-pink-200 hover:bg-pink-300": color === "pink" && !disabled,
-          },
-          {
-            "bg-red-200 hover:bg-red-300": color === "red" && !disabled,
-          },
-          {
-            "bg-orange-200 hover:bg-orange-300":
-              color === "orange" && !disabled,
-          },
-          {
-            "bg-yellow-200 hover:bg-yellow-300":
-              color === "yellow" && !disabled,
-          },
-          {
-            "bg-lime-200 hover:bg-lime-300": color === "lime" && !disabled,
-          },
-          {
-            "bg-cyan-200 hover:bg-cyan-300": color === "cyan" && !disabled,
-          },
-          { "rounded-none": rounded === "none" },
-          { "rounded-md": rounded === "md" },
-          { "rounded-full": rounded === "full" }
+          "w-full border-black border-2 focus:outline-none h-9 overflow-hidden shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-white mb-2",
+          className
         )}
       >
-        {showPercentage && !disabled && (
+        <div
+          style={{ width: widthPercentage + "%" }}
+          className="h-full bg-yellow-200 hover:bg-yellow-300 flex flex-row items-center justify-end overflow-hidden"
+        >
           <h1
             className={classNames(
               "mr-2",
               widthPercentage !== 100 ? "font-bold" : "font-black",
-              widthPercentage !== 100 ? "opacity-80" : "opacity-100",
-              className
+              widthPercentage !== 100 ? "opacity-80" : "opacity-100"
             )}
           >
             {Math.round(widthPercentage)}%
           </h1>
-        )}
+        </div>
+      </div>
+      
+      {/* Time display */}
+      <div className="flex justify-between text-xs text-gray-300">
+        <span>{formatTime(progress)}</span>
+        <span>{formatTime(duration)}</span>
       </div>
     </div>
   );

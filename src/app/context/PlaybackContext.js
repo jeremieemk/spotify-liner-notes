@@ -1,7 +1,11 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { useSpotify } from "./SpotifyContext";
+import { createContext, useContext } from "react";
+import { useSpotifyData } from "../hooks/useSpotifyData";
+import { useSpotifyControls } from "../hooks/useSpotifyControls";
+import { useAudioCommentary } from "../hooks/useAudioCommentary";
+import { useSongData } from "./SongDataContext";
+import { useAuth } from "./AuthContext";
 
 const PlaybackContext = createContext();
 
@@ -14,60 +18,44 @@ export const usePlayback = () => {
 };
 
 export function PlaybackProvider({ children }) {
-  const { trackProgress, isPlaying, trackDuration } = useSpotify();
-  const [isAudioCommentaryPlaying, setIsAudioCommentaryPlaying] =
-    useState(false);
-  const [autoPlayCommentary, setAutoPlayCommentary] = useState(false);
+  const { token } = useAuth();
 
-  const COMMENTARY_DURATION_MS = 5000;
+  const { trackProgress, isPlaying, trackDuration } = useSpotifyData(token);
 
-  const handleAudioCommentaryChange = (playing) => {
-    setIsAudioCommentaryPlaying(playing);
-  };
+  const { audioUrl, eleveLabsIsLoading, elevenLabsError } = useSongData();
 
-  const playCommentaryAudio = () => {
-    // Optionally pause Spotify playback before playing commentary.
-    // pauseSpotifyPlayback(); // Uncomment if you have a function to pause playback.
+  const {
+    play: playSpotify,
+    pause: pauseSpotify,
+    next: playNextSpotifyTrack,
+    previous: playPreviousSpotifyTrack,
+  } = useSpotifyControls(token);
 
-    // Trigger commentary playback logic here.
-    console.log("Playing commentary audio...");
-    setIsAudioCommentaryPlaying(true);
-
-    // Simulate commentary audio playback duration; replace with real audio event handling.
-    setTimeout(() => {
-      console.log("Commentary audio finished...");
-      setIsAudioCommentaryPlaying(false);
-      // Optionally resume Spotify playback here:
-      // resumeSpotifyPlayback();
-    }, COMMENTARY_DURATION_MS);
-  };
-
-  // detect when a song ends and auto-play commentary if enabled
-  useEffect(() => {
-    // if auto-play is enabled, the song has reached its end, and commentary isn't already playing...
-    if (
-      autoPlayCommentary &&
-      trackProgress >= trackDuration &&
-      !isAudioCommentaryPlaying
-    ) {
-      // trigger commentary playback.
-      playCommentaryAudio();
-    }
-  }, [
-    trackProgress,
-    trackDuration,
-    autoPlayCommentary,
-    isAudioCommentaryPlaying,
-  ]);
+  const { isAudioCommentaryPlaying, setAutoPlayCommentary } =
+    useAudioCommentary(
+      trackProgress,
+      trackDuration,
+      audioUrl,
+      eleveLabsIsLoading,
+      elevenLabsError,
+      playSpotify,
+      pauseSpotify
+    );
 
   const value = {
+    // spotify playback state
     trackProgress,
     isPlaying,
+
+    // audio commentary playback state
     isAudioCommentaryPlaying,
-    handleAudioCommentaryChange,
-    autoPlayCommentary,
     setAutoPlayCommentary,
-    playCommentaryAudio,
+
+    // spotify playback controls
+    playSpotify,
+    pauseSpotify,
+    playNextSpotifyTrack,
+    playPreviousSpotifyTrack,
   };
 
   return (

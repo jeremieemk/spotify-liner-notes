@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 
 export function useSpotifyData(accessToken) {
   const [spotifyData, setSpotifyData] = useState(null);
+  const [artist, setArtist] = useState(null);
+  const [song, setSong] = useState(null);
+  const [album, setAlbum] = useState(null);
   const [trackProgress, setTrackProgress] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState(null);
@@ -33,6 +36,9 @@ export function useSpotifyData(accessToken) {
         setSpotifyData(data.item);
         setTrackProgress(data.progress_ms);
         setIsPlaying(data.is_playing);
+        setArtist(data.item.artists[0].name);
+        setSong(data.item.name);
+        setAlbum(data.item.album.name);
       } catch (err) {
         setError(err.message);
       }
@@ -44,5 +50,5 @@ export function useSpotifyData(accessToken) {
     return () => clearInterval(interval);
   }, [accessToken]);
 
-  return { spotifyData, trackProgress, isPlaying, error };
+  return { spotifyData, artist, song, album, trackProgress, isPlaying, error };
 }

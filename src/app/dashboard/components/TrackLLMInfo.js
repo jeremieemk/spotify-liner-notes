@@ -1,15 +1,18 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import LoadingSpinner from "./LoadingSpinner";
+import { useSongData } from "@/app/context/SongDataContext";
 
-const TrackLLMInfo = ({
-  perplexityData,
-  perplexityLoading,
-  perplexityError,
-  mistralData,
-  mistralLoading,
-  mistralError,
-}) => {
+const TrackLLMInfo = ({}) => {
+  const {
+    perplexityResponse,
+    perplexityLoading,
+    perplexityError,
+    mistralResponse,
+    mistralLoading,
+    mistralError,
+  } = useSongData();
+
   const [activeSource, setActiveSource] = useState("perplexity"); // Default to perplexity
 
   const markdownComponents = {
@@ -32,14 +35,14 @@ const TrackLLMInfo = ({
     switch (activeSource) {
       case "mistral":
         return {
-          data: mistralData,
+          data: mistralResponse,
           isLoading: mistralLoading,
           error: mistralError,
         };
       case "perplexity":
       default:
         return {
-          data: perplexityData,
+          data: perplexityResponse,
           isLoading: perplexityLoading,
           error: perplexityError,
         };

@@ -13,13 +13,12 @@ import TrackLyrics from "./components/TrackLyrics";
 import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 
 import { useAuth } from "../context/AuthContext";
-import { useSpotify } from "../context/SpotifyContext";
 import { usePlayback } from "../context/PlaybackContext";
 import { useSongData } from "../context/SongDataContext";
 
 const Dashboard = () => {
   const { token, isLoading: authLoading } = useAuth();
-  const { spotifyData, artist, song } = useSpotify();
+  const { spotifyData } = useSongData();
 
   const {
     trackProgress,
@@ -55,18 +54,17 @@ const Dashboard = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-black to-gray-900 text-white p-8">
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
-          <ProgressBar
-            maxValue={spotifyData?.duration_ms}
-            currentValue={trackProgress || 0}
+          <ProgressBar />
+
+          <SpotifyControls />
+
+          <TrackInfo />
+
+          <TrackLLMInfo
+
           />
 
-          <SpotifyControls
-            token={token}
-            isPlaying={isPlaying}
-            isAudioCommentaryPlaying={isAudioCommentaryPlaying}
-          />
-
-          <TrackAudioContent
+          {/* <TrackAudioContent
             llmData={chatGPTResponse}
             isLoading={chatGPTLoading}
             onAudioPlayingChange={handleAudioCommentaryChange}
@@ -74,16 +72,9 @@ const Dashboard = () => {
             isSpotifyPlaying={isPlaying}
           />
 
-          <TrackInfo spotifyData={spotifyData} song={song} artist={artist} />
+         
 
-          <TrackLLMInfo
-            perplexityData={perplexityResponse}
-            perplexityLoading={perplexityLoading}
-            perplexityError={perplexityError}
-            mistralData={mistralResponse}
-            mistralLoading={mistralLoading}
-            mistralError={mistralError}
-          />
+
 
           <TrackDiscogsCredits
             releaseData={discogsCredits.release}
@@ -102,7 +93,7 @@ const Dashboard = () => {
               isLoading={lyricsLoading}
               error={lyricsError}
             />
-          )}
+          )} */}
         </div>
       </div>
     </div>

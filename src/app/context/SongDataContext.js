@@ -9,8 +9,10 @@ import { useMistralData } from "../hooks/useMistralData";
 import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
 import { usePerplexityData } from "../hooks/usePerplexityData";
 import { getMaxCredits } from "../utils/trackUtils";
-import { useSpotify } from "./SpotifyContext";
+import { useSpotifyData } from "../hooks/useSpotifyData";
 import { useElevenLabs } from "../hooks/useElevenLabs";
+import { useAuth } from "./AuthContext";
+
 
 const SongDataContext = createContext();
 
@@ -23,7 +25,9 @@ export const useSongData = () => {
 };
 
 export function SongDataProvider({ children }) {
-  const { spotifyData, artist, song, album } = useSpotify();
+  const { token } = useAuth();
+
+  const { spotifyData, artist, song, album } = useSpotifyData(token);
 
   // get lyrics from the Musixmatch API
   const {
@@ -73,14 +77,13 @@ export function SongDataProvider({ children }) {
     maxCreditsData.credits,
     discogsLoading
   );
-
+  
   // create audio commentary script using ChatGPT
   const {
     chatGPTResponse,
     isLoading: chatGPTLoading,
     error: chatGPTError,
   } = useChatGPTData(perplexityResponse);
-
 
   // audio commentary generation using ElevenLabs API
   const {
@@ -97,6 +100,12 @@ export function SongDataProvider({ children }) {
   } = useMistralData(artist, song, album);
 
   const value = {
+    // spotify data
+    spotifyData,
+    artist,
+    song,
+    album,
+
     // lyrics data
     lyrics,
     lyricsLoading,
@@ -126,14 +135,14 @@ export function SongDataProvider({ children }) {
     chatGPTLoading,
     chatGPTError,
 
+    mistralResponse,
+    mistralLoading,
+    mistralError,
+
     // audio commentary data
     audioUrl,
     eleveLabsIsLoading,
     elevenLabsError,
-
-    mistralResponse,
-    mistralLoading,
-    mistralError,
   };
 
   return (

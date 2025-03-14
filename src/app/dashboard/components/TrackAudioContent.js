@@ -1,6 +1,5 @@
 import React from "react";
 import { useElevenLabs } from "../../hooks/useElevenLabs";
-import AudioPlayer from "./AudioPlayer";
 
 const TrackAudioContent = ({ 
   llmData, 
@@ -82,13 +81,13 @@ const TrackAudioContent = ({
       </div>
 
       {error && <p className="text-red-400 mb-4">{error}</p>}
-
+{/* 
       <AudioPlayer
         audioUrl={audioUrl}
         isLoading={audioLoading}
         onRegenerate={handleGenerateAudio}
         onPlayingChange={handleAudioPlayingChange}
-      />
+      /> */}
 
       {isLoading ? (
         <p className="text-gray-400">Loading voice commentary...</p>

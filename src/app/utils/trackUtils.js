@@ -56,7 +56,7 @@ export const getMaxCredits = (
  */
 const countCredits = (tracklist, songName) => {
   const track = tracklist.find(
-    (track) => track.title.toLowerCase() === songName.toLowerCase()
+    (track) => track.title?.toLowerCase() === songName?.toLowerCase()
   );
   return track?.extraartists?.length || 0;
 };
@@ -65,7 +65,7 @@ const formatCredits = (release, songName) => {
   if (!release?.tracklist) return { albumCredits: [], trackCredits: [] };
 
   const track = release.tracklist.find(
-    (track) => track.title.toLowerCase() === songName.toLowerCase()
+    (track) => track.title.toLowerCase() === songName?.toLowerCase()
   );
 
   return {
