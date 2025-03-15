@@ -12,7 +12,6 @@ import { useSpotifyData } from "../hooks/useSpotifyData";
 import { getMaxCredits } from "../utils/trackUtils";
 import { useAuth } from "./AuthContext";
 
-
 const SongDataContext = createContext();
 
 export const useSongData = () => {
@@ -73,10 +72,13 @@ export function SongDataProvider({ children }) {
     album,
     lyrics,
     lyricsLoading,
+    discogsLoading,
     maxCreditsData.credits,
-    discogsLoading
+    discogsLoading,
+    musicBrainzData,
+    musicBrainzLoading
   );
-  
+
   // create audio commentary script using ChatGPT
   const {
     chatGPTResponse,
