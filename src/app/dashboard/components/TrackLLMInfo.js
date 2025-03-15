@@ -1,19 +1,13 @@
-import { useState } from "react";
+import { useSongData } from "@/app/context/SongDataContext";
 import ReactMarkdown from "react-markdown";
 import LoadingSpinner from "./LoadingSpinner";
-import { useSongData } from "@/app/context/SongDataContext";
 
 const TrackLLMInfo = ({}) => {
   const {
     perplexityResponse,
     perplexityLoading,
     perplexityError,
-    mistralResponse,
-    mistralLoading,
-    mistralError,
   } = useSongData();
-
-  const [activeSource, setActiveSource] = useState("perplexity"); // Default to perplexity
 
   const markdownComponents = {
     h2: ({ children }) => (
@@ -30,66 +24,23 @@ const TrackLLMInfo = ({}) => {
     ),
   };
 
-  // Determine current data, loading state, and error based on active source
-  const getCurrentData = () => {
-    switch (activeSource) {
-      case "mistral":
-        return {
-          data: mistralResponse,
-          isLoading: mistralLoading,
-          error: mistralError,
-        };
-      case "perplexity":
-      default:
-        return {
-          data: perplexityResponse,
-          isLoading: perplexityLoading,
-          error: perplexityError,
-        };
-    }
-  };
-
-  const { data, isLoading, error } = getCurrentData();
-
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">About this song</h2>
-        <div className="flex space-x-2 bg-black/30 rounded-lg p-1">
-          <button
-            onClick={() => setActiveSource("perplexity")}
-            className={`px-3 py-1 text-sm rounded-md transition-colors ${
-              activeSource === "perplexity"
-                ? "bg-indigo-600 text-white"
-                : "text-gray-300 hover:bg-gray-800"
-            }`}
-          >
-            Perplexity
-          </button>
-          <button
-            onClick={() => setActiveSource("mistral")}
-            className={`px-3 py-1 text-sm rounded-md transition-colors ${
-              activeSource === "mistral"
-                ? "bg-indigo-600 text-white"
-                : "text-gray-300 hover:bg-gray-800"
-            }`}
-          >
-            Mistral
-          </button>
-        </div>
       </div>
 
       <div className="min-h-24">
-        {isLoading ? (
+        {perplexityLoading ? (
           <LoadingSpinner fullScreen={false} message="" size={24} />
-        ) : error ? (
-          <p className="text-gray-400">{error}</p>
-        ) : !data ? (
+        ) : perplexityError ? (
+          <p className="text-gray-400">{perplexityError}</p>
+        ) : !perplexityResponse ? (
           <p className="text-gray-400">No analysis available</p>
         ) : (
           <div className="prose prose-invert max-w-none">
             <ReactMarkdown components={markdownComponents}>
-              {data}
+              {perplexityResponse}
             </ReactMarkdown>
           </div>
         )}

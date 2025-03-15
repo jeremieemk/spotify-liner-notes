@@ -3,14 +3,13 @@
 import { createContext, useContext } from "react";
 import { useChatGPTData } from "../hooks/useChatGPTData";
 import { useDiscogsData } from "../hooks/useDiscogsData";
+import { useElevenLabs } from "../hooks/useElevenLabs";
 import { useLastFmApi } from "../hooks/useLastFmApi";
 import { useLyricsApi } from "../hooks/useLyricsApi";
-import { useMistralData } from "../hooks/useMistralData";
 import { useMusicBrainzData } from "../hooks/useMusicBrainzData";
 import { usePerplexityData } from "../hooks/usePerplexityData";
-import { getMaxCredits } from "../utils/trackUtils";
 import { useSpotifyData } from "../hooks/useSpotifyData";
-import { useElevenLabs } from "../hooks/useElevenLabs";
+import { getMaxCredits } from "../utils/trackUtils";
 import { useAuth } from "./AuthContext";
 
 
@@ -93,11 +92,11 @@ export function SongDataProvider({ children }) {
   } = useElevenLabs(chatGPTResponse);
 
   // generate mistral alternative comment
-  const {
-    mistralResponse,
-    isLoading: mistralLoading,
-    error: mistralError,
-  } = useMistralData(artist, song, album);
+  // const {
+  //   mistralResponse,
+  //   isLoading: mistralLoading,
+  //   error: mistralError,
+  // } = useMistralData(artist, song, album);
 
   const value = {
     // spotify data
@@ -135,9 +134,9 @@ export function SongDataProvider({ children }) {
     chatGPTLoading,
     chatGPTError,
 
-    mistralResponse,
-    mistralLoading,
-    mistralError,
+    // mistralResponse,
+    // mistralLoading,
+    // mistralError,
 
     // audio commentary data
     audioUrl,
