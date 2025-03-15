@@ -4,12 +4,13 @@ const TrackDiscogsCredits = () => {
   const { discogsCredits, song } = useSongData();
   const releaseData = discogsCredits?.release;
 
+  const creditsContent = renderTrackCredits(releaseData, song);
+  if (!creditsContent) return null;
+
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-6">
       <h2 className="text-2xl font-bold mb-4">Discogs Details</h2>
-      {renderTrackCredits(releaseData, song) || (
-        <p className="text-gray-400">No credits found</p>
-      )}
+      {creditsContent}
     </div>
   );
 };
