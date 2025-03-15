@@ -6,6 +6,7 @@ export function useSpotifyData(accessToken) {
   const [song, setSong] = useState(null);
   const [album, setAlbum] = useState(null);
   const [trackProgress, setTrackProgress] = useState(null);
+  const [trackDuration, setTrackDuration] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,6 +40,7 @@ export function useSpotifyData(accessToken) {
         setArtist(data.item.artists[0].name);
         setSong(data.item.name);
         setAlbum(data.item.album.name);
+        setTrackDuration(data.item.duration_ms);
       } catch (err) {
         setError(err.message);
       }
@@ -50,5 +52,5 @@ export function useSpotifyData(accessToken) {
     return () => clearInterval(interval);
   }, [accessToken]);
 
-  return { spotifyData, artist, song, album, trackProgress, isPlaying, error };
+  return { spotifyData, artist, song, album, trackProgress, trackDuration, isPlaying, error };
 }

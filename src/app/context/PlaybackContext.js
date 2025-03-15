@@ -31,15 +31,16 @@ export function PlaybackProvider({ children }) {
     previous: playPreviousSpotifyTrack,
   } = useSpotifyControls(token);
 
-  const { isAudioCommentaryPlaying, setAutoPlayCommentary } =
+  const { autoPlayCommentary,setAutoPlayCommentary, isAudioCommentaryPlaying,  } =
     useAudioCommentary(
       trackProgress,
       trackDuration,
       audioUrl,
       eleveLabsIsLoading,
       elevenLabsError,
-      playSpotify,
-      pauseSpotify
+      playNextSpotifyTrack,
+      pauseSpotify,
+      playSpotify
     );
 
   const value = {
@@ -48,8 +49,9 @@ export function PlaybackProvider({ children }) {
     isPlaying,
 
     // audio commentary playback state
-    isAudioCommentaryPlaying,
+    autoPlayCommentary,
     setAutoPlayCommentary,
+    isAudioCommentaryPlaying,
 
     // spotify playback controls
     playSpotify,

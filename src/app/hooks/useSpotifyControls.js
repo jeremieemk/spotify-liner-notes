@@ -1,5 +1,6 @@
 
 export function useSpotifyControls(token)  {
+
     const handlePlayback = async (action) => {
       try {
         const response = await fetch(
