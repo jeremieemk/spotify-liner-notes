@@ -15,7 +15,7 @@ interface RequestBody {
 interface DiscogsCredits {
   albumCredits?: CreditItem[];
   trackCredits?: CreditItem[];
-  [key: string]: any; // For fallback handling of other credit structures
+  [key: string]: unknown; // Changed from any to unknown
 }
 
 interface CreditItem {
@@ -28,12 +28,55 @@ interface CreditItem {
   resource_url?: string;
 }
 
+interface ArtistCredit {
+  name?: string;
+  artist?: { name: string };
+  joinphrase?: string;
+}
+
+interface Recording {
+  title?: string;
+  'first-release-date'?: string;
+  'artist-credit'?: ArtistCredit[];
+}
+
+interface Label {
+  name?: string;
+}
+
+interface LabelInfo {
+  label?: Label;
+  catalog_number?: string;
+}
+
+interface Release {
+  title?: string;
+  date?: string;
+  country?: string;
+  'label-info'?: LabelInfo[];
+}
+
+interface Artist {
+  name: string;
+}
+
+interface RelationshipTarget {
+  name?: string;
+  title?: string;
+}
+
+interface Relationship {
+  artist?: Artist;
+  target?: RelationshipTarget;
+  type?: string;
+}
+
 interface MusicBrainzCredits {
-  recording?: any;
-  release?: any;
-  artist?: any;
-  relationships?: any;
-  [key: string]: any; // For fallback handling of other structures
+  recording?: Recording;
+  release?: Release;
+  artist?: Artist;
+  relationships?: Record<string, Relationship[]>;
+  [key: string]: unknown; // Changed from any to unknown
 }
 
 // Define types for the Perplexity API response
@@ -225,7 +268,7 @@ function formatMusicBrainzCredits(credits: MusicBrainzCredits | null | undefined
     // Add artist credits if available
     if (credits.recording["artist-credit"] && credits.recording["artist-credit"].length > 0) {
       result += "Artist Credits:\n";
-      credits.recording["artist-credit"].forEach((credit: any) => {
+      credits.recording["artist-credit"].forEach((credit: ArtistCredit) => {
         result += `- ${credit.name || "Unknown"}\n`;
       });
     }
@@ -241,7 +284,7 @@ function formatMusicBrainzCredits(credits: MusicBrainzCredits | null | undefined
     // Add label information if available
     if (credits.release["label-info"] && credits.release["label-info"].length > 0) {
       result += "Labels:\n";
-      credits.release["label-info"].forEach((label: any) => {
+      credits.release["label-info"].forEach((label: LabelInfo) => {
         if (label.label) {
           result += `- ${label.label.name || "Unknown"}\n`;
         }
@@ -254,7 +297,7 @@ function formatMusicBrainzCredits(credits: MusicBrainzCredits | null | undefined
     result += "\nRelationships:\n";
     for (const type in credits.relationships) {
       result += `${type}:\n`;
-      credits.relationships[type].forEach((rel: any) => {
+      credits.relationships[type].forEach((rel: Relationship) => {
         if (rel.artist) {
           result += `- ${rel.artist.name} (${rel.type || "Unknown"})\n`;
         } else if (rel.target) {
