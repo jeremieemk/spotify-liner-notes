@@ -78,7 +78,7 @@ export function useAudioCommentary(
     // elevenlabs is not loading, and there's no error...
     if (
       autoPlayCommentary &&
-      trackProgress >= trackDuration - 2000 &&
+      trackProgress >= trackDuration - 3000 &&
       !isAudioCommentaryPlaying &&
       !eleveLabsIsLoading &&
       !elevenLabsError &&

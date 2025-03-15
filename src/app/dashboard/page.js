@@ -6,7 +6,10 @@ import NoTrackPlaying from "./components/NoTrackPlaying";
 import ProgressBar from "./components/ProgressBar";
 import SpotifyControls from "./components/SpotifyControls";
 import TrackDiscogsCredits from "./components/TrackDiscogsCredits";
+import TrackMusicBrainzCredits from "./components/TrackMusicBrainzCredits";
 import TrackInfo from "./components/TrackInfos";
+import TrackLyrics from "./components/TrackLyrics";
+import ArtistBio from "./components/ArtistBio";
 import TrackLLMInfo from "./components/TrackLLMInfo";
 
 import { useAuth } from "../context/AuthContext";
@@ -27,22 +30,14 @@ const Dashboard = () => {
       <div className="max-w-4xl w-full">
         <div className="bg-black/50 backdrop-blur-lg rounded-lg p-8 shadow-xl">
           <ProgressBar />
-          <CommentarySettings/>
+          <CommentarySettings />
           <SpotifyControls />
           <TrackInfo />
           <TrackLLMInfo />
+          <TrackLyrics/>
           <TrackDiscogsCredits />
-          {/* {musicBrainzData?.recording && (
-            <TrackMusicBrainzCredits data={musicBrainzData.recording} />
-          )}
-          {artistBio && <ArtistBio bio={artistBio} />}
-          {lyrics && (
-            <TrackLyrics
-              lyrics={lyrics}
-              isLoading={lyricsLoading}
-              error={lyricsError}
-            />
-          )} */}
+          <TrackMusicBrainzCredits />
+          <ArtistBio />
         </div>
       </div>
     </div>

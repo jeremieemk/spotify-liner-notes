@@ -1,9 +1,15 @@
-"use client";
+import { useSongData } from "../../context/SongDataContext";
 
-import React from "react";
+const TrackMusicBrainzCredits = () => {
 
-const TrackMusicBrainzCredits = ({ data }) => {
-  if (!data) return null;
+  const { musicBrainzData } = useSongData();
+
+  // Return null if there's no MusicBrainz data
+  if (!musicBrainzData || !musicBrainzData.recording) {
+    return null;
+  }
+
+  const data = musicBrainzData.recording
 
   const {
     isrcs,

@@ -9,16 +9,16 @@ export default function CommentarySettings() {
   const { autoPlayCommentary, setAutoPlayCommentary } = usePlayback();
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex  items-center space-x-2 w-full justify-end">
+      <Label htmlFor="auto-play-commentary-switch">
+        Auto-play commentary at end of song
+      </Label>
       <Switch
         id="auto-play-commentary-switch"
         checked={autoPlayCommentary}
         onCheckedChange={(checked) => setAutoPlayCommentary(checked)}
         className="w-10 h-6 bg-gray-200 rounded-full"
       />
-      <Label htmlFor="auto-play-commentary-switch">
-        Auto-play Commentary at End of Song
-      </Label>
     </div>
   );
 }
