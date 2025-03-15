@@ -72,7 +72,6 @@ export function SongDataProvider({ children }) {
     album,
     lyrics,
     lyricsLoading,
-    discogsLoading,
     maxCreditsData.credits,
     discogsLoading,
     musicBrainzData,
