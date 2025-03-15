@@ -29,19 +29,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // const prompt = `This some data about a song that I am currently streaming on my music app. 
-    // When the song ends, I would like to know more about what I just heard.
-    // Use the data to create a radio-dj type speech about the song.
-    // Focus on fun facts and narratives about the song and artist.
-    // The size of the speech should be adapted to the format - a radio DJ speech to give some context about the song.
-    // Use common radio-dj type phrases like 'the song you just heard was', 'stay tuned', etc...
-    // Try and not exceed 150 words while prioritizing catchy content and fun facts over stereotypical DJ filler phrases.
-    //  ${songData}
-    // `;
     const prompt = `This some data about a song that I am currently streaming on my music app. 
-    Use the data to create a very short radio-dj type speech about the song.
-    Keep it as short and compact as possible, just say the name and the artist
-    Keep ot under 50 words
+    When the song ends, I would like to know more about what I just heard.
+    Use the data to create a commentary about the song.
+    Do not use common radio dj filler like 'stay tuned' or 'coming up next'.
+    Focus on fun facts and narratives about the song and artist.
+    The size of the speech should't be more than 80 words.
      ${songData}
     `;
 
