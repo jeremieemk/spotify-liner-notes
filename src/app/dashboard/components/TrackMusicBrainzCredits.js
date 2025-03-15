@@ -1,7 +1,12 @@
 import { useSongData } from "../../context/SongDataContext";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const TrackMusicBrainzCredits = () => {
-
   const { musicBrainzData } = useSongData();
 
   // Return null if there's no MusicBrainz data
@@ -72,81 +77,33 @@ const TrackMusicBrainzCredits = () => {
   }
 
   return (
-    <div className="bg-white/5 rounded-lg p-6 mt-8">
-      <h2 className="text-2xl font-bold mb-4">MusicBrainz Details</h2>
+    <Accordion type="single" collapsible className="bg-white/5 rounded-lg p-6 mt-8">
+      <AccordionItem value="musicbrainz" className="border-none">
+        <AccordionTrigger className="text-2xl font-bold py-0">
+          MusicBrainz Details
+        </AccordionTrigger>
+        <AccordionContent>
+          {/* Basic track info */}
+          <div className="mb-4 pt-4">
+            {isrcs && isrcs.length > 0 && (
+              <p className="text-white">
+                <strong>ISRC:</strong> {isrcs.join(", ")}
+              </p>
+            )}
+          </div>
 
-      {/* Basic track info */}
-      <div className="mb-4">
-        {isrcs && isrcs.length > 0 && (
-          <p className="text-white">
-            <strong>ISRC:</strong> {isrcs.join(", ")}
-          </p>
-        )}
-      </div>
-
-      {/* Recording Credits (arranger, engineer, performer, etc.) */}
-      {Object.keys(groupedRecordingRelations).length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white my-4">
-            Recording Credits
-          </h3>
-          {Object.entries(groupedRecordingRelations).map(([role, items]) => (
-            <div key={role} className="mb-3">
-              <h5 className="capitalize text-white font-bold">{role}</h5>
-              <ul className="list-disc list-inside">
-                {items.map((item, idx) => {
-                  // If the item is an artist or label (has a .name)
-                  if (item.name) {
-                    return (
-                      <li key={idx} className="text-gray-300">
-                        {item.name}
-                        {item.disambiguation && ` (${item.disambiguation})`}
-                      </li>
-                    );
-                  }
-                  // If it's a URL
-                  if (item.resource) {
-                    return (
-                      <li key={idx} className="text-gray-300">
-                        <a
-                          href={item.resource}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline"
-                        >
-                          {item.resource}
-                        </a>
-                      </li>
-                    );
-                  }
-                  // Fallback
-                  return (
-                    <li key={idx} className="text-gray-300">
-                      {JSON.stringify(item)}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Work Details (from the "performance" relation) */}
-      {workData && (
-        <div className="mb-4">
-
-          {/* Work sub-relations (composer, lyricist, etc.) */}
-          {Object.keys(groupedWorkRelations).length > 0 && (
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold text-white mb-2">
-                Work Credits
-              </h4>
-              {Object.entries(groupedWorkRelations).map(([role, items]) => (
+          {/* Recording Credits (arranger, engineer, performer, etc.) */}
+          {Object.keys(groupedRecordingRelations).length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-white my-4">
+                Recording Credits
+              </h3>
+              {Object.entries(groupedRecordingRelations).map(([role, items]) => (
                 <div key={role} className="mb-3">
                   <h5 className="capitalize text-white font-bold">{role}</h5>
                   <ul className="list-disc list-inside">
                     {items.map((item, idx) => {
+                      // If the item is an artist or label (has a .name)
                       if (item.name) {
                         return (
                           <li key={idx} className="text-gray-300">
@@ -155,18 +112,7 @@ const TrackMusicBrainzCredits = () => {
                           </li>
                         );
                       }
-                      if (item.work && item.work.title) {
-                        return (
-                          <li key={idx} className="text-gray-300">
-                            <strong>{item.work.title}</strong>{" "}
-                            {item.attributes && item.attributes.length > 0 && (
-                              <span className="text-sm font-normal text-gray-400">
-                                ({item.attributes.join(", ")})
-                              </span>
-                            )}
-                          </li>
-                        );
-                      }
+                      // If it's a URL
                       if (item.resource) {
                         return (
                           <li key={idx} className="text-gray-300">
@@ -193,9 +139,72 @@ const TrackMusicBrainzCredits = () => {
               ))}
             </div>
           )}
-        </div>
-      )}
-    </div>
+
+          {/* Work Details (from the "performance" relation) */}
+          {workData && (
+            <div className="mb-4">
+              {/* Work sub-relations (composer, lyricist, etc.) */}
+              {Object.keys(groupedWorkRelations).length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-lg font-semibold text-white mb-2">
+                    Work Credits
+                  </h4>
+                  {Object.entries(groupedWorkRelations).map(([role, items]) => (
+                    <div key={role} className="mb-3">
+                      <h5 className="capitalize text-white font-bold">{role}</h5>
+                      <ul className="list-disc list-inside">
+                        {items.map((item, idx) => {
+                          if (item.name) {
+                            return (
+                              <li key={idx} className="text-gray-300">
+                                {item.name}
+                                {item.disambiguation && ` (${item.disambiguation})`}
+                              </li>
+                            );
+                          }
+                          if (item.work && item.work.title) {
+                            return (
+                              <li key={idx} className="text-gray-300">
+                                <strong>{item.work.title}</strong>{" "}
+                                {item.attributes && item.attributes.length > 0 && (
+                                  <span className="text-sm font-normal text-gray-400">
+                                    ({item.attributes.join(", ")})
+                                  </span>
+                                )}
+                              </li>
+                            );
+                          }
+                          if (item.resource) {
+                            return (
+                              <li key={idx} className="text-gray-300">
+                                <a
+                                  href={item.resource}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="underline"
+                                >
+                                  {item.resource}
+                                </a>
+                              </li>
+                            );
+                          }
+                          // Fallback
+                          return (
+                            <li key={idx} className="text-gray-300">
+                              {JSON.stringify(item)}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };
 

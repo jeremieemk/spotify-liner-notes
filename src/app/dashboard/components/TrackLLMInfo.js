@@ -1,6 +1,12 @@
 import { useSongData } from "@/app/context/SongDataContext";
 import ReactMarkdown from "react-markdown";
 import LoadingSpinner from "./LoadingSpinner";
+import { 
+  Accordion, 
+  AccordionItem, 
+  AccordionTrigger, 
+  AccordionContent 
+} from "@/components/ui/accordion";
 
 const TrackLLMInfo = ({}) => {
   const {
@@ -26,25 +32,30 @@ const TrackLLMInfo = ({}) => {
 
   return (
     <div className="bg-white/5 rounded-lg p-6 mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">About this song</h2>
-      </div>
-
-      <div className="min-h-24">
-        {perplexityLoading ? (
-          <LoadingSpinner fullScreen={false} message="" size={24} />
-        ) : perplexityError ? (
-          <p className="text-gray-400">{perplexityError}</p>
-        ) : !perplexityResponse ? (
-          <p className="text-gray-400">No analysis available</p>
-        ) : (
-          <div className="prose prose-invert max-w-none">
-            <ReactMarkdown components={markdownComponents}>
-              {perplexityResponse}
-            </ReactMarkdown>
-          </div>
-        )}
-      </div>
+      <Accordion type="single" defaultValue="song-info" collapsible>
+        <AccordionItem value="song-info" className="border-b-0">
+          <AccordionTrigger className="text-2xl font-bold px-0 py-0">
+            About this song
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="min-h-24 mt-4">
+              {perplexityLoading ? (
+                <LoadingSpinner fullScreen={false} message="" size={24} />
+              ) : perplexityError ? (
+                <p className="text-gray-400">{perplexityError}</p>
+              ) : !perplexityResponse ? (
+                <p className="text-gray-400">No analysis available</p>
+              ) : (
+                <div className="prose prose-invert max-w-none">
+                  <ReactMarkdown components={markdownComponents}>
+                    {perplexityResponse}
+                  </ReactMarkdown>
+                </div>
+              )}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 };

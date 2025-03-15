@@ -1,5 +1,11 @@
 import React from "react";
 import { useSongData } from "../../context/SongDataContext";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const ArtistBio = () => {
   const { artistBio } = useSongData();
@@ -25,13 +31,19 @@ const ArtistBio = () => {
   }
 
   return (
-    <div className="bg-white/5 rounded-lg p-6 mt-6">
-      <h2 className="text-2xl font-bold mb-4">Artist Bio</h2>
-      <div
-        className="text-gray-300"
-        dangerouslySetInnerHTML={{ __html: paragraphedBio }}
-      />
-    </div>
+    <Accordion type="single" collapsible className="bg-white/5 rounded-lg p-6 mt-6">
+      <AccordionItem value="artist-bio" className="border-none">
+        <AccordionTrigger className="text-2xl font-bold py-0">
+          Artist Bio
+        </AccordionTrigger>
+        <AccordionContent>
+          <div
+            className="text-gray-300 pt-4"
+            dangerouslySetInnerHTML={{ __html: paragraphedBio }}
+          />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };
 

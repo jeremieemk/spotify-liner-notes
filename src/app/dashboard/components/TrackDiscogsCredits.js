@@ -1,4 +1,10 @@
 import { useSongData } from "../../context/SongDataContext";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const TrackDiscogsCredits = () => {
   const { discogsCredits, song } = useSongData();
@@ -8,10 +14,16 @@ const TrackDiscogsCredits = () => {
   if (!creditsContent) return null;
 
   return (
-    <div className="bg-white/5 rounded-lg p-6 mt-6">
-      <h2 className="text-2xl font-bold mb-4">Discogs Details</h2>
-      {creditsContent}
-    </div>
+    <Accordion type="single" collapsible className="bg-white/5 rounded-lg p-6 mt-6">
+      <AccordionItem value="discogs" className="border-none">
+        <AccordionTrigger className="text-2xl font-bold py-0">
+          Discogs Details
+        </AccordionTrigger>
+        <AccordionContent>
+          {creditsContent}
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };
 
