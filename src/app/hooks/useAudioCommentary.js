@@ -26,12 +26,10 @@ export function useAudioCommentary(
   }, []);
 
   const playCommentaryAudio = useCallback(() => {
-
     // if audio is already playing, don't start another instance
     if (isAudioCommentaryPlaying) return;
 
     // pause Spotify before playing commentary
-    playNextSpotifyTrack();
     pauseSpotify();
 
     // clean up any existing audio first
@@ -43,20 +41,20 @@ export function useAudioCommentary(
     // setup event handlers
     audioRef.current.onended = () => {
       console.log("Commentary audio ended");
-      playSpotify();
+      playNextSpotifyTrack();
       setTimeout(() => {
         setIsAudioCommentaryPlaying(false);
         cleanupAudio();
-      }, 1000);
+      }, 2000);
     };
 
     audioRef.current.onerror = () => {
       console.error("Error playing audio commentary");
-      playSpotify();
+      playNextSpotifyTrack();
       setTimeout(() => {
         setIsAudioCommentaryPlaying(false);
         cleanupAudio();
-      }, 1000);
+      }, 2000);
     };
 
     // play the audio and update state
@@ -75,7 +73,6 @@ export function useAudioCommentary(
   useEffect(() => {
     // if auto-play is enabled, the song has reached its end, commentary isn't already playing,
     // elevenlabs is not loading, and there's no error..
-
     if (
       autoPlayCommentary &&
       trackProgress >= trackDuration - 3000 &&
@@ -106,7 +103,6 @@ export function useAudioCommentary(
   }, [cleanupAudio]);
 
   return {
-
     isAudioCommentaryPlaying,
   };
 }
