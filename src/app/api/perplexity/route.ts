@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrompt } from "../getPrompt";
 
-export const maxDuration = 20; 
+export const maxDuration = 40; 
 
 // Define types for the request body
 interface RequestBody {
