@@ -1,19 +1,16 @@
 import { useSongData } from "@/app/context/SongDataContext";
 import ReactMarkdown from "react-markdown";
 import LoadingSpinner from "./LoadingSpinner";
-import { 
-  Accordion, 
-  AccordionItem, 
-  AccordionTrigger, 
-  AccordionContent 
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } from "@/components/ui/accordion";
 
 const TrackLLMInfo = ({}) => {
-  const {
-    perplexityResponse,
-    perplexityLoading,
-    perplexityError,
-  } = useSongData();
+  const { perplexityResponse, perplexityLoading, perplexityError } =
+    useSongData();
 
   const markdownComponents = {
     h2: ({ children }) => (
@@ -39,12 +36,10 @@ const TrackLLMInfo = ({}) => {
           </AccordionTrigger>
           <AccordionContent>
             <div className="min-h-24 mt-4">
-              {perplexityLoading ? (
+              {perplexityLoading || !perplexityResponse ? (
                 <LoadingSpinner fullScreen={false} message="" size={24} />
               ) : perplexityError ? (
                 <p className="text-gray-400">{perplexityError}</p>
-              ) : !perplexityResponse ? (
-                <p className="text-gray-400">No analysis available</p>
               ) : (
                 <div className="prose prose-invert max-w-none">
                   <ReactMarkdown components={markdownComponents}>
