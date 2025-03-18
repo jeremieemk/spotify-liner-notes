@@ -149,9 +149,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
 
     if (!perplexityResponse.ok) {
-      const errorData = await perplexityResponse.json();
-      throw new Error(`Perplexity API error: ${JSON.stringify(errorData)}`);
+      let errorData: string;
+      try {
+        const contentType = perplexityResponse.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          errorData = JSON.stringify(await perplexityResponse.json());
+        } else {
+          errorData = await perplexityResponse.text();
+        }
+      } catch {
+        errorData = "Unable to parse error response";
+      }
+      throw new Error(
+        `Perplexity API error [${perplexityResponse.status}]: ${errorData}`
+      );
     }
+
 
     const data: PerplexityResponse = await perplexityResponse.json();
     return NextResponse.json({ data });
