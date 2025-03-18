@@ -76,7 +76,7 @@ export function usePerplexityData(
     }
 
     fetchData();
-  }, [artist, song, album, lyricsLoading, discogsLoading, musicbrainzLoading]);
+  }, [lyricsLoading, discogsLoading, musicbrainzLoading]);
 
   return { perplexityResponse, isLoading, error };
 }
