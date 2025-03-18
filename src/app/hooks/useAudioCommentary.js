@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
 export function useAudioCommentary(
+  autoPlayCommentary,
   trackProgress,
   trackDuration,
   audioUrl,
@@ -10,7 +11,6 @@ export function useAudioCommentary(
   pauseSpotify,
   playSpotify
 ) {
-  const [autoPlayCommentary, setAutoPlayCommentary] = useState(false);
   const [isAudioCommentaryPlaying, setIsAudioCommentaryPlaying] =
     useState(false);
 
@@ -26,7 +26,6 @@ export function useAudioCommentary(
   }, []);
 
   const playCommentaryAudio = useCallback(() => {
-    console.log("Playing commentary audio");
 
     // if audio is already playing, don't start another instance
     if (isAudioCommentaryPlaying) return;
@@ -75,7 +74,8 @@ export function useAudioCommentary(
   // detect when a song ends and auto-play commentary if enabled
   useEffect(() => {
     // if auto-play is enabled, the song has reached its end, commentary isn't already playing,
-    // elevenlabs is not loading, and there's no error...
+    // elevenlabs is not loading, and there's no error..
+
     if (
       autoPlayCommentary &&
       trackProgress >= trackDuration - 3000 &&
@@ -106,8 +106,7 @@ export function useAudioCommentary(
   }, [cleanupAudio]);
 
   return {
-    autoPlayCommentary,
-    setAutoPlayCommentary,
+
     isAudioCommentaryPlaying,
   };
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-export const useElevenLabs = (text) => {
+export const useElevenLabs = (text, autoPlayCommentary) => {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -41,10 +41,14 @@ export const useElevenLabs = (text) => {
   }, [audioUrl]);
 
   useEffect(() => {
+    if(!autoPlayCommentary) {
+      return;
+    }
+
     if (text && text !== prevTextRef.current) {
       generateAudio(text);
     }
-  }, [text, generateAudio]);
+  }, [text, autoPlayCommentary, generateAudio]);
 
   // Clean up on unmount
   useEffect(() => {
